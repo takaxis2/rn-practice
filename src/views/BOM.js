@@ -2,7 +2,6 @@
 import { Button } from "@rneui/themed";
 import { useState } from "react";
 import { Modal, StyleSheet, Text, View } from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Cell, Row, Table, TableWrapper } from "react-native-table-component";
 import BottomTool from "../components/BottonTool";
 import { BomPopupData, Boms } from "../sampleData";
@@ -28,22 +27,27 @@ const BOM= ({navigation}) =>{
             onRequestClose={()=>{setModalVisible(!modalVisible)}}>
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
-                        {/* <Text>{data}</Text>
-                        <View>
-                            {
-                                bomPopupData.map((data, index)=>(
-                                    <Text key={index}>{data}</Text>
-                                ))
-                            }
-                        </View> */}
+                        
 
                         <Table>
                             <Row data={[data]} style={styles.head} />
-                            {
-                                bomPopupData.map((data, index)=>(
-                                        <Cell key={index} data={data} style={styles.tableRow} onPress={()=>{navigation.push('BOMDetail',{id:index,title:data})}}/>
-                                ))
-                            }
+                            <TableWrapper style={styles.flexRow}>
+                                <TableWrapper style={styles.table}>
+                                    {
+                                        bomPopupData.map((data, index)=>(
+                                                <Cell key={index} data={data} style={styles.tableRow} onPress={()=>{navigation.push('BOMDetail',{id:index,title:data})}}/>
+                                        ))
+                                    }
+                                </TableWrapper>
+                                <TableWrapper style={styles.table}>
+                                    {
+                                        bomPopupData.map((data, index)=>(
+                                                <Cell key={index} data={data} style={styles.tableRow} onPress={()=>{navigation.push('BOMDetail',{id:index,title:data})}}/>
+                                        ))
+                                    }
+                                </TableWrapper>
+                            </TableWrapper>
+                            
                         </Table>
                         
                         
@@ -119,6 +123,14 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         flexWrap: "wrap",
       },
+    flexRow: {
+        flexDirection:"row",
+        flex:1
+    },
+    table:{
+        width:'50%',
+        height:'100%'
+    }
 });
 
 export default BOM;

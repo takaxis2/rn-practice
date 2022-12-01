@@ -1,15 +1,21 @@
 /* eslint-disable */
 import {  Alert, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import BottomTool from "../components/BottonTool";
+import  DocumentPicker  from 'react-native-document-picker'
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Button, Input } from "@rneui/themed";
 // import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { mdTableData, mdTableHead } from "../sampleData";
+import { Icon } from "@rneui/themed";
 
 const ModelDetail= ({route, navigation}) =>{
     const { title } = route.params;
     
+    const [isEdit, setIsEdit] = useState(false);
+
+    const [fileResponse, setFileResponse] = useState([]);
+
     const [modalVisible, setModalVisible] = useState(false);
     const [modalData, setModalData] = useState([]);
 
@@ -18,9 +24,23 @@ const ModelDetail= ({route, navigation}) =>{
     const [dueDate, setDueDate] = useState();
     const [open, setOpen] = useState(false);
 
+    const [modelDetail, setModelDetail] = useState([]);
+
+
 
     const tableHead =mdTableHead;
     const tableData = mdTableData;
+
+    const handleDocumentSelection = useCallback(async () => {
+      try {
+        const response = await DocumentPicker.pick({
+          presentationStyle: 'fullScreen',
+        });
+        setFileResponse(response);
+      } catch (err) {
+        console.warn(err);
+      }
+    }, []);
 
     const bom = (data, index)=>(
       <TouchableOpacity onPress={()=>{navigation.push('BOMDetail', {title: data})}}>
@@ -42,12 +62,28 @@ const ModelDetail= ({route, navigation}) =>{
     );
 
     const drawing= (data, index)=>(
-      <TouchableOpacity onPress={()=>this.alert(`this is drawing ${data[0]}`)}>
-        <View>
+      <View style={[styles.row, styles.spaceAround]}>
+        <TouchableOpacity onPress={()=>this.alert(`this is drawing ${data[0]}`)}>
+        
+        {isEdit ?
+          <TextInput value={data[1]}/>
+            : 
           <Text>{data[1]}</Text>
-        </View>
-      </TouchableOpacity>
+        }
+
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleDocumentSelection}>
+
+          {
+            isEdit && 
+            // <Icon type='antdesign' name="upload" />
+            <Text style={styles.fontWeight}> image </Text>
+          }
+        </TouchableOpacity>
+      </View>
     );
+
+   
 
     const cell=(cellIndex, data, index)=>{
       if(cellIndex ===1) return drawing(data, index);
@@ -57,6 +93,16 @@ const ModelDetail= ({route, navigation}) =>{
       
     }
     
+    const edit = ()=>{
+      setIsEdit(!isEdit);
+
+    }
+
+    const doneEdit =() =>{
+      setIsEdit(!isEdit);
+
+      //서버 통신 로직
+    }
     
     
     return (
@@ -122,7 +168,10 @@ const ModelDetail= ({route, navigation}) =>{
           }
         </Table>
         <BottomTool navigation={navigation} >
-          <Button title={'수정'}/>
+          {
+            isEdit ? <Button title={'확인'} onPress={()=>doneEdit()}/> : <Button title={'수정'} onPress={()=>edit()}/>
+          }
+          
         </BottomTool>
       </View>
     );
@@ -188,39 +237,15 @@ const styles = StyleSheet.create({
       spaceBetween:{ 
         justifyContent:"space-between"
       },
+      spaceAround:{
+        justifyContent:"space-around",
+        alignItems:"center",
+      },
+      fontWeight:{
+        fontWeight:'bold'
+      }
   });
 
 export default ModelDetail;
 
 
-// /**
-//  * //     <View style={styles.centeredView}>
-//     //   <Modal
-//     //     animationType="fade"
-//     //     transparent={true}
-//     //     visible={modalVisible}
-//     //     onRequestClose={() => {
-//     //       Alert.alert("Modal has been closed.");
-//     //       setModalVisible(!modalVisible);
-//     //     }}
-//     //   >
-//     //     <View style={styles.centeredView}>
-//     //       <View style={styles.modalView}>
-//     //         <Text style={styles.modalText}>Hello World!</Text>
-//     //         <Pressable
-//     //           style={[styles.button, styles.buttonClose]}
-//     //           onPress={() => setModalVisible(!modalVisible)}
-//     //         >
-//     //           <Text style={styles.textStyle}>Hide Modal</Text>
-//     //         </Pressable>
-//     //       </View>
-//     //     </View>
-//     //   </Modal>
-//     //   <Pressable
-//     //     style={[styles.button, styles.buttonOpen]}
-//     //     onPress={() => setModalVisible(true)}
-//     //   >
-//     //     <Text style={styles.textStyle}>Show Modal</Text>
-//     //   </Pressable>
-//     // </View>
-//  */

@@ -8,17 +8,38 @@ import { model } from "../sampleData";
 
 const Model= ({navigation}) =>{
     const modelData = model;
-    const {data, setData} = useState();
+    const {mData, setMData} = useState({});
     const [modalVisible, setModalVisible] = useState(false);
 
     const getModels = async () => {
         console.log("requesting model");
-        const res = await fetch(`${URL}/model`, {
-          method: "GET",
-        }).then((res)=>{
-            // setData(res);
-        }).catch((err)=>console.log(err));
-        console.log(res);
+        try {
+            const result = await fetch(`${URL}/model`, {
+                method: 'GET',
+                headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json'
+                },
+              });
+              const json = await result.json();
+            //   setMData(json);
+              // console.log(typeof(json));
+              console.log(json);
+        } catch (error) {
+            console.log(error);
+        }
+       
+
+        // try {
+        //     const response = await fetch(
+        //       'https://reactnative.dev/movies.json'
+        //     );
+        //     const json = await response.json();
+        //     console.log(json.movies);
+        //     setMData(json.movies);
+        // } catch (error) {
+        //     console.error(error);
+        //   }
     };
 
     useEffect(()=>{
@@ -45,6 +66,8 @@ const Model= ({navigation}) =>{
                 modelData.map((data, index)=>(
                     <View key={index}><Button title={data} onPress={()=>{navigation.push('ModelDetail',{title: data})}}/></View>
                     ))
+
+                    
             }
             {/* <Button title={'test'} onPress={()=>setModalVisible(!modalVisible)}/> */}
             <BottomTool navigation={navigation} >
