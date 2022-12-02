@@ -11,9 +11,9 @@ const Home = ({navigation}) => {
         <View><Button size="lg" title="생산 계획" onPress={()=>navigation.push('ProductionPlan')} /></View>
         <View><Button size="lg" title ="일일 작업 계획" onPress={()=>navigation.push('WorkPlan')}/></View>
         <View><Button size="lg" title ="B.O.M" onPress={()=>navigation.push('BOM')}/></View>
-        <View><Button size="lg" title ="도면" onPress={()=>navigation.push('Drawing')}/></View>
+        {/* <View><Button size="lg" title ="도면" onPress={()=>navigation.push('Drawing')}/></View>
         <View><Button size="lg" title ="재고 현황" onPress={()=>navigation.push('Stock')}/></View>
-        <View><Button size="lg" title ="부자재 주문" onPress={()=>navigation.push('Submaterial')}/></View>
+        <View><Button size="lg" title ="부자재 주문" onPress={()=>navigation.push('Submaterial')}/></View> */}
         <View style={[styles.row, styles.spaceBetween]}>
           <Button size="lg" title="수정" />
           <Button size="lg" title="데이터 백업" />

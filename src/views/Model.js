@@ -1,56 +1,39 @@
 /* eslint-disable */
-import { Button } from "@rneui/themed";
-import { useEffect, useState } from "react";
-import {  StyleSheet, Text, View, Modal } from "react-native";
+// import { Button } from "@rneui/themed";
+import { useState, useEffect } from "react";
+import {  StyleSheet, Text, View, Modal, ActivityIndicator, Button } from "react-native";
 import BottomTool from "../components/BottonTool";
-import { URL } from "../api/index";
+import { getAllModelApi } from "../api/index";
 import { model } from "../sampleData";
 
 const Model= ({navigation}) =>{
     const modelData = model;
-    const {mData, setMData} = useState({});
+    const [data, setData] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
 
-    const getModels = async () => {
-        console.log("requesting model");
+    const getModels = async() => {
         try {
-            const result = await fetch(`${URL}/model`, {
-                method: 'GET',
-                headers: {
-                  Accept: 'application/json',
-                  'Content-Type': 'application/json'
-                },
-              });
-              const json = await result.json();
-            //   setMData(json);
-              // console.log(typeof(json));
+            //   const result = 
+              const json = await getAllModelApi();
+              console.log(json);
+              setData(json);
               console.log(json);
         } catch (error) {
             console.log(error);
         }
        
-
-        // try {
-        //     const response = await fetch(
-        //       'https://reactnative.dev/movies.json'
-        //     );
-        //     const json = await response.json();
-        //     console.log(json.movies);
-        //     setMData(json.movies);
-        // } catch (error) {
-        //     console.error(error);
-        //   }
+       
     };
 
-    useEffect(()=>{
+    useEffect(() => {
         getModels();    
-    });
+    }, []);
 
     return (
         
         <View style={[styles.container,styles.spaceAround]}>
             
-            <Modal
+            {/* <Modal
                 animationType="none"
                 transparent={true}
                 visible={modalVisible}
@@ -61,10 +44,12 @@ const Model= ({navigation}) =>{
                         <Text>수정 입니다</Text>
                     </View>
                 </View>
-            </Modal>
+            </Modal> */}
             {
-                modelData.map((data, index)=>(
-                    <View key={index}><Button title={data} onPress={()=>{navigation.push('ModelDetail',{title: data})}}/></View>
+                data.map((data, index)=>(
+                    <View key={index}>
+                        <Button key={data.id} style={styles.button} title={data.name} onPress={()=>{navigation.push('ModelDetail',{title: data.name})}}/>
+                    </View>
                     ))
 
                     
@@ -89,10 +74,11 @@ const styles = StyleSheet.create({
         margin: 8,
     },
     button:{
-        width:100,
-        height:50,
+        width:'50%',
+        height:'50%',
         padding:10,
-        margin:10
+        margin:10,
+        flex:1
     },
     centeredView: {
         flex: 1,

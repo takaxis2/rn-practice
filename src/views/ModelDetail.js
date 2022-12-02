@@ -25,7 +25,7 @@ const ModelDetail= ({route, navigation}) =>{
     const [open, setOpen] = useState(false);
 
     const [modelDetail, setModelDetail] = useState([]);
-
+  
 
 
     const tableHead =mdTableHead;

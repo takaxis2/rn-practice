@@ -38,8 +38,7 @@ export const mdTableData =[
         [6,	'AWE','B.O.M',	'계획'],
         [7,	'SESE','B.O.M',	'계획'],
         [8,	'SF','B.O.M',	'계획'],
-        [9,	'X','B.O.M',	'계획'],
-        [10, 'VADSFA','B.O.M',	'계획'],
+        
         // [11,'XZVSS','B.O.M',	'계획'],
         // [12,'E', 'B.O.M','계획'],
         // [13,'SVEW','B.O.M',	'계획'],
@@ -50,12 +49,12 @@ export const mdTableData =[
 
 export const model=['A','B','C','D','E',];
 
-export const bdRowHead=['id','파이','치수','중량','T뽑기','CNC','비고','일일계획',];
-export const bdSampleBody=[
-        [1,7,125,54,'유','무',' ',' '],
-        [1,7,125,54,'유','무',' ',' '],
-        [1,7,125,54,'유','무',' ',' '],
-        [1,7,125,54,'유','무',' ',' '],
+export const bdRowHead=['id','∅','치수','CNC','T뽑기','확','축','단','소요량','일일계획',];
+export const bdSampleBody=[ 
+        [1,7,125,true, false,true, true,false,9],       
+        [1,7,125,true, false,true, true,false,9],
+        [1,7,125,true, false,true, true,false,9], 
+        [1,7,125,true, false,true, true,false,9],
     ];
 
 export const Boms=['A','B','C','D','E',];

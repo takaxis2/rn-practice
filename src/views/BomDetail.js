@@ -26,6 +26,16 @@ const BOMDetail=({route, navigation})=>{
         </TouchableOpacity>
       );
 
+    const check = (ox)=>(
+        <View>
+            <Text>{ox}</Text>
+        </View>
+    );
+    const convert = (data)=> {
+        if(data) return check('O');
+        else if(!data) return check('X');
+    } 
+
     return(
         <View style={styles.container}>
             <Text>this is BOMDetail page</Text>
@@ -60,9 +70,10 @@ const BOMDetail=({route, navigation})=>{
                             <TableWrapper style={styles.tableRow}>
                                 {
                                     rowData.map((cellData, cellIndex)=>(
-                                        <Cell key={cellIndex} data={cellIndex === 7 ? plan(cellData, cellIndex): cellData} />
+                                        <Cell key={cellIndex} data={typeof cellData === 'boolean' ? convert(cellData) : cellData} />
                                     ))
                                 }
+                                <Cell data={plan(rowData)}/>
                             </TableWrapper>
                         ))
                     }
