@@ -1,5 +1,7 @@
 /* eslint-disable */
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Button } from "@rneui/base";
+import { useState } from "react";
+import {  Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Table, Row, TableWrapper, Cell } from "react-native-table-component";
 import BottomTool from "../components/BottonTool";
@@ -10,14 +12,63 @@ const WorkPlan= ({navigation}) =>{
     const data = wData;
     const rowHead = wRowHead;
 
+    const [isEdit, setIsEdit] = useState(false);
+
     const complete = (data)=>(
-        <TouchableOpacity    onPress={()=>{
-          alert(data);
+        <View>
+      {
+        isEdit ?
+        <TouchableOpacity onPress={()=>{
+          Alert.alert(
+          '삭제',
+          '정말로 삭제하시겠습니까?',
+          [
+            {
+              text:'삭제',
+              onPress:()=>{},
+            },
+            {
+              text:'취소',
+              onPress:()=>{}
+            }
+          ],
+          {
+            cancelable:true,
+            onDissmiss:()=>{}
+          }
+          );
+        }}>
+          <View >
+              <Text>삭제</Text>
+          </View>
+        </TouchableOpacity>
+        :
+        <TouchableOpacity onPress={()=>{
+          Alert.alert(
+            '완료',
+            '정말로 완료하시겠습니까?',
+            [
+              {
+                text:'완료',
+                onPress:()=>{},
+              },
+              {
+                text:'취소',
+                onPress:()=>{}
+              }
+            ],
+            {
+              cancelable:true,
+              onDissmiss:()=>{}
+            }
+            );
         }}>
           <View >
               <Text>완료</Text>
           </View>
         </TouchableOpacity>
+      }
+    </View>
       );
 
     
@@ -32,6 +83,13 @@ const WorkPlan= ({navigation}) =>{
         else if(!data) return check('X');
     }
 
+    const edit= () =>{
+        setIsEdit(!isEdit);
+    }
+    const doneEdit = () => {
+        setIsEdit(!isEdit);
+        // 서버 작업
+    }
 
     return (
         <View>
@@ -52,7 +110,14 @@ const WorkPlan= ({navigation}) =>{
                         ))
                     }
                 </Table>
-                <BottomTool navigation={navigation} />
+                <BottomTool navigation={navigation}>
+                    {
+                        isEdit?
+                        <Button title={'완료'} onPress={()=>doneEdit()}/>
+                        :
+                        <Button title={'수정'} onPress={()=>edit()}/>
+                    }
+                </BottomTool>
             </View>
         </View>
     );

@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { useCallback, useState } from "react";
-import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Alert, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import BottomTool from "../components/BottonTool";
 import  DocumentPicker  from 'react-native-document-picker'
 import { Button } from "@rneui/themed";
@@ -13,6 +13,7 @@ const ProductionPlan= ({navigation}) =>{
   const data = pData;
 
   const [fileResponse, setFileResponse] = useState([]);
+  const [isEdit, setIsEdit] = useState(false);
 
   const handleDocumentSelection = useCallback(async () => {
     try {
@@ -26,14 +27,70 @@ const ProductionPlan= ({navigation}) =>{
   }, []);
 
   const complete = (data)=>(
-    <TouchableOpacity onPress={()=>{
-      alert(data);
-    }}>
-      <View >
-          <Text>완료</Text>
-      </View>
-    </TouchableOpacity>
+    
+    <View>
+      {
+        isEdit ?
+        <TouchableOpacity onPress={()=>{
+          Alert.alert(
+          '삭제',
+          '정말로 삭제하시겠습니까?',
+          [
+            {
+              text:'삭제',
+              onPress:()=>{},
+            },
+            {
+              text:'취소',
+              onPress:()=>{}
+            }
+          ],
+          {
+            cancelable:true,
+            onDissmiss:()=>{}
+          }
+          );
+        }}>
+          <View >
+              <Text>삭제</Text>
+          </View>
+        </TouchableOpacity>
+        :
+        <TouchableOpacity onPress={()=>{
+          Alert.alert(
+            '완료',
+            '정말로 완료하시겠습니까?',
+            [
+              {
+                text:'완료',
+                onPress:()=>{},
+              },
+              {
+                text:'취소',
+                onPress:()=>{}
+              }
+            ],
+            {
+              cancelable:true,
+              onDissmiss:()=>{}
+            }
+            );
+        }}>
+          <View >
+              <Text>완료</Text>
+          </View>
+        </TouchableOpacity>
+      }
+    </View>
   );
+
+  const edit = () => {
+    setIsEdit(!isEdit);
+  }
+  const doneEdit = () =>{
+    setIsEdit(!isEdit);
+    //서버통신
+  }
 
   return (
     <View>
@@ -74,7 +131,14 @@ const ProductionPlan= ({navigation}) =>{
         </View>
       </View>
 
-        <BottomTool navigation={navigation}/>
+        <BottomTool navigation={navigation}>
+              {
+                isEdit ? 
+                <Button title={'확인'}  onPress={()=>doneEdit()}/> 
+                :
+                <Button title={'수정'} onPress={()=>edit()} /> 
+              }
+        </BottomTool>
     </View>
   )
 }

@@ -5,6 +5,9 @@ import { StyleSheet, View } from "react-native";
 
 const BottomTool = ({navigation, children}) =>{
 
+   
+
+
     return (
         <View style={[styles.row,styles.spaceBetween]}>
             {children}

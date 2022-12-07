@@ -1,7 +1,7 @@
 /*eslint-disable*/
 import { Button, Text } from "@rneui/themed";
 import { useState } from "react";
-import { Modal, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { Modal, StyleSheet, Switch, TextInput, TouchableOpacity, View } from "react-native";
 import { Cell, Row, Table, TableWrapper } from "react-native-table-component";
 import BottomTool from "../components/BottonTool";
 import { bdRowHead, bdSampleBody } from "../sampleData";
@@ -11,9 +11,19 @@ const BOMDetail=({route, navigation})=>{
 
     const [modalVisible, setModalVisible]=useState(false);
     const [EA,setEA] = useState(0);
+    const [isEdit, setIsEdit] = useState(false);
 
     const rowHead=bdRowHead;
     const sampleBody=bdSampleBody;
+    
+    const edit =() =>{
+        setIsEdit(!isEdit);
+    }
+    const doneEdit = () =>{
+        setIsEdit(!isEdit);
+
+        // 서버 작업
+    }
     
     const plan = (data, index) => (
         <TouchableOpacity onPress={() => {
@@ -26,14 +36,33 @@ const BOMDetail=({route, navigation})=>{
         </TouchableOpacity>
       );
 
-    const check = (ox)=>(
+    const cellInfo = (data) =>(
+        <View style={[styles.row]}>
+            {
+                isEdit ?
+                <TextInput value={`${data}`} />
+                :
+                <Text>{data}</Text>
+
+            }
+        </View>
+    );
+
+
+    const check = (ox, data)=>(
         <View>
-            <Text>{ox}</Text>
+            {
+                isEdit ?
+                <Switch value={data} />
+                :
+                <Text>{ox}</Text>
+
+            }
         </View>
     );
     const convert = (data)=> {
-        if(data) return check('O');
-        else if(!data) return check('X');
+        if(data) return check('O', data);
+        else if(!data) return check('X', data);
     } 
 
     return(
@@ -70,7 +99,7 @@ const BOMDetail=({route, navigation})=>{
                             <TableWrapper style={styles.tableRow}>
                                 {
                                     rowData.map((cellData, cellIndex)=>(
-                                        <Cell key={cellIndex} data={typeof cellData === 'boolean' ? convert(cellData) : cellData} />
+                                        <Cell key={cellIndex} data={typeof cellData === 'boolean' ? convert(cellData) : cellInfo(cellData)} />
                                     ))
                                 }
                                 <Cell data={plan(rowData)}/>
@@ -80,7 +109,14 @@ const BOMDetail=({route, navigation})=>{
                 
             </Table>
 
-            <BottomTool navigation={navigation} />
+            <BottomTool navigation={navigation}>
+                {
+                    isEdit ?
+                    <Button title={'완료'} onPress={()=> doneEdit()}/>
+                    :
+                    <Button title={'수정'} onPress={()=>edit()}/>
+                }
+            </BottomTool>
         </View>
     );
 }

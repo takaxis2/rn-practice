@@ -1,6 +1,7 @@
 // const URL = "http://127.0.0.1:3300";
-export const URL = 'http://14.48.162.122:3300';
+// export const URL = 'http://14.48.162.122:3300';
 // const URL = 'https://10.0.2.2:3300';  
+const URL = 'http://172.28.0.1:3300';  
 
 //model
 export const getAllModelApi = async () => {
