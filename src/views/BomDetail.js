@@ -1,10 +1,11 @@
 /*eslint-disable*/
-import { Button, Text } from "@rneui/themed";
-import { useState } from "react";
-import { Modal, StyleSheet, Switch, TextInput, TouchableOpacity, View } from "react-native";
+// import { Text } from "@rneui/themed";
+import { useCallback, useState } from "react";
+import { Modal, StyleSheet, Switch, TextInput, TouchableOpacity, View, Button, Text } from "react-native";
 import { Cell, Row, Table, TableWrapper } from "react-native-table-component";
 import BottomTool from "../components/BottonTool";
 import { bdRowHead, bdSampleBody } from "../sampleData";
+import  DocumentPicker  from 'react-native-document-picker'
 
 const BOMDetail=({route, navigation})=>{
     const {id, title} =route.params;
@@ -12,9 +13,21 @@ const BOMDetail=({route, navigation})=>{
     const [modalVisible, setModalVisible]=useState(false);
     const [EA,setEA] = useState(0);
     const [isEdit, setIsEdit] = useState(false);
+    const [fileResponse, setFileResponse] = useState([]);
 
     const rowHead=bdRowHead;
     const sampleBody=bdSampleBody;
+
+    const handleDocumentSelection = useCallback(async () => {
+        try {
+          const response = await DocumentPicker.pick({
+            presentationStyle: 'fullScreen',
+          });
+          setFileResponse(response);
+        } catch (err) {
+          console.warn(err);
+        }
+      }, []);
     
     const edit =() =>{
         setIsEdit(!isEdit);
@@ -64,6 +77,26 @@ const BOMDetail=({route, navigation})=>{
         if(data) return check('O', data);
         else if(!data) return check('X', data);
     } 
+    const drawing = (data) =>(
+        <View>
+            {
+                isEdit ?
+                <TouchableOpacity onPress={handleDocumentSelection}>
+                    <Text>image</Text>
+                </TouchableOpacity>
+                :
+                <TouchableOpacity onPress={()=>alert('image')}>
+                    <Text>{data}</Text>
+                </TouchableOpacity>
+            }
+        </View>
+    )
+
+    const cell = (data, index) =>{
+        if(index === 0) return drawing(data);
+        else if(typeof data === 'boolean') return convert(data);
+        else return cellInfo(data);
+    }
 
     return(
         <View style={styles.container}>
@@ -99,7 +132,8 @@ const BOMDetail=({route, navigation})=>{
                             <TableWrapper style={styles.tableRow}>
                                 {
                                     rowData.map((cellData, cellIndex)=>(
-                                        <Cell key={cellIndex} data={typeof cellData === 'boolean' ? convert(cellData) : cellInfo(cellData)} />
+                                        // <Cell key={cellIndex} data={typeof cellData === 'boolean' ? convert(cellData) : cellInfo(cellData)} />
+                                        <Cell key={cellIndex} data={cell(cellData, cellIndex)} />
                                     ))
                                 }
                                 <Cell data={plan(rowData)}/>

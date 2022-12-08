@@ -1,11 +1,12 @@
 /* eslint-disable */
 import { useCallback, useState } from "react";
-import { Alert, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Alert, StatusBar, StyleSheet, Text, TouchableOpacity, View, Button, ScrollView } from "react-native"
 import BottomTool from "../components/BottonTool";
 import  DocumentPicker  from 'react-native-document-picker'
-import { Button } from "@rneui/themed";
+// import { Button } from "@rneui/themed";
 import { Row, Rows, Table, TableWrapper, Cell } from "react-native-table-component";
 import { pRow, pData } from "../sampleData";
+import { deleteProdPlanAPi, patchProdPlanAPi } from "../api";
 
 const ProductionPlan= ({navigation}) =>{
   
@@ -38,7 +39,7 @@ const ProductionPlan= ({navigation}) =>{
           [
             {
               text:'삭제',
-              onPress:()=>{},
+              onPress:()=>deleteProdPlanAPi(),
             },
             {
               text:'취소',
@@ -63,7 +64,7 @@ const ProductionPlan= ({navigation}) =>{
             [
               {
                 text:'완료',
-                onPress:()=>{},
+                onPress:()=>patchProdPlanAPi(),
               },
               {
                 text:'취소',
@@ -130,6 +131,7 @@ const ProductionPlan= ({navigation}) =>{
             </Table>
         </View>
       </View>
+      
 
         <BottomTool navigation={navigation}>
               {
@@ -138,6 +140,7 @@ const ProductionPlan= ({navigation}) =>{
                 :
                 <Button title={'수정'} onPress={()=>edit()} /> 
               }
+              <Button title={'완료 기록'} />
         </BottomTool>
     </View>
   )

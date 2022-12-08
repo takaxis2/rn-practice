@@ -1,10 +1,10 @@
 /* eslint-disable */
-import {  Alert, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import {  Alert, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View, Button } from "react-native"
 import BottomTool from "../components/BottonTool";
 import  DocumentPicker  from 'react-native-document-picker'
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
 import { useCallback, useState } from "react";
-import { Button, Input } from "@rneui/themed";
+// import { Button, Input } from "@rneui/themed";
 // import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { mdTableData, mdTableHead } from "../sampleData";
 import { Icon } from "@rneui/themed";
@@ -108,6 +108,10 @@ const ModelDetail= ({route, navigation}) =>{
     return (
       <View style={styles.container}>
         <Text>this is model {title}'s detail page</Text>
+        <View style={[styles.row, styles.spaceBetween]}>
+          <Button title={'이전'} />
+          <Button title={'다음'} />
+        </View>
         <Modal
           animationType="none"
           transparent={true}

@@ -1,14 +1,14 @@
 export const wRowHead=['id','생성날자', '∅', '치수', 'cnc', '축', '확', '단', '수량', '완료'];
 export const wData=[
-    [1, '2022/11/30', 11, 21, 31, true, true, false, 100],
-    [2, '2022/11/30', 12, 22, 32, true, true, false, 200],
-    [3, '2022/11/30', 13, 23, 33, true, true, false, 300],
-    [4, '2022/11/30', 14, 24, 34, true, true, false, 400],
-    [5, '2022/11/30', 15, 25, 35, true, true, false, 500],
-    [6, '2022/11/30', 16, 26, 36, true, true, false, 600],
-    [7, '2022/11/30', 17, 27, 37, true, true, false, 700],
-    [8, '2022/11/30', 18, 28, 38, true, true, false, 800],
-    [9, '2022/11/30', 19, 29, 39, true, true, false, 900],
+    [1, '11/30', 11, 21, 31, true, true, false, 100],
+    [2, '11/30', 12, 22, 32, true, true, false, 200],
+    [3, '11/30', 13, 23, 33, true, true, false, 300],
+    [4, '11/30', 14, 24, 34, true, true, false, 400],
+    [5, '11/30', 15, 25, 35, true, true, false, 500],
+    [6, '11/30', 16, 26, 36, true, true, false, 600],
+    [7, '11/30', 17, 27, 37, true, true, false, 700],
+    [8, '11/30', 18, 28, 38, true, true, false, 800],
+    [9, '11/30', 19, 29, 39, true, true, false, 900],
 
 ];
 
@@ -58,4 +58,4 @@ export const bdSampleBody=[
     ];
 
 export const Boms=['A','B','C','D','E',];
-export const BomPopupData =['A-1','A-2','A-3','A-4','A-5',];
+export const BomPopupData =['A-1','A-2','A-3','A-4','A-5','A-6','A-7','A-8',];

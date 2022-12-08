@@ -1,7 +1,7 @@
 /* eslint-disable */
-import { Button } from "@rneui/themed";
+// import { Button } from "@rneui/themed";
 import { useState } from "react";
-import { Modal, StyleSheet, Text, View } from "react-native"
+import { Modal, StyleSheet, Text, View, Button } from "react-native"
 import { Cell, Row, Table, TableWrapper } from "react-native-table-component";
 import BottomTool from "../components/BottonTool";
 import { BomPopupData, Boms } from "../sampleData";
@@ -27,7 +27,10 @@ const BOM= ({navigation}) =>{
             onRequestClose={()=>{setModalVisible(!modalVisible)}}>
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
-                        
+                        <View style={[styles.row, styles.spaceBetween]}>
+                            <Button title={'이전'} />
+                            <Button title={'다음'} />
+                        </View>
 
                         <Table>
                             <Row data={[data]} style={styles.head} />
@@ -68,7 +71,9 @@ const BOM= ({navigation}) =>{
                         </View>
                 ))
             }
-            <BottomTool navigation={navigation} />
+            <BottomTool navigation={navigation} >
+                <Button title={'수정'} />
+            </BottomTool>
         </View>
         
     );
@@ -106,7 +111,7 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
         borderRadius: 20,
         padding: 60,
-        alignItems: "center",
+        // alignItems: "center",
         shadowColor: "#000",
         shadowOffset: {
           width: 0,
@@ -125,11 +130,11 @@ const styles = StyleSheet.create({
       },
     flexRow: {
         flexDirection:"row",
-        flex:1
+        // flex:1
     },
     table:{
         width:'50%',
-        height:'100%'
+        height:'70%'
     }
 });
 

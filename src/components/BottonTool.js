@@ -1,7 +1,7 @@
 /* eslint-disable*/
 
-import { Button } from "@rneui/themed";
-import { StyleSheet, View } from "react-native";
+// import { Button } from "@rneui/themed";
+import { StyleSheet, View, Button } from "react-native";
 
 const BottomTool = ({navigation, children}) =>{
 
@@ -10,7 +10,10 @@ const BottomTool = ({navigation, children}) =>{
 
     return (
         <View style={[styles.row,styles.spaceBetween]}>
-            {children}
+            <View style={styles.row}> 
+                {children}
+            </View>
+
             <View style={styles.row}>
                 <Button title="이전 화면" onPress={()=>{
                     navigation.pop();

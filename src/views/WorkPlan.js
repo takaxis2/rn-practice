@@ -1,9 +1,10 @@
 /* eslint-disable */
-import { Button } from "@rneui/base";
+// import { Button } from "@rneui/base";
 import { useState } from "react";
-import {  Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import {  Alert, StyleSheet, Text, TouchableOpacity, View, Button } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Table, Row, TableWrapper, Cell } from "react-native-table-component";
+import { deleteWorkPlanAPi, patchWorkPlanAPi } from "../api";
 import BottomTool from "../components/BottonTool";
 import { wData, wRowHead } from "../sampleData";
 
@@ -11,6 +12,7 @@ const WorkPlan= ({navigation}) =>{
 
     const data = wData;
     const rowHead = wRowHead;
+    
 
     const [isEdit, setIsEdit] = useState(false);
 
@@ -25,7 +27,7 @@ const WorkPlan= ({navigation}) =>{
           [
             {
               text:'삭제',
-              onPress:()=>{},
+              onPress:()=>deleteWorkPlanAPi(),
             },
             {
               text:'취소',
@@ -50,7 +52,7 @@ const WorkPlan= ({navigation}) =>{
             [
               {
                 text:'완료',
-                onPress:()=>{},
+                onPress:()=>patchWorkPlanAPi(),
               },
               {
                 text:'취소',
@@ -117,6 +119,7 @@ const WorkPlan= ({navigation}) =>{
                         :
                         <Button title={'수정'} onPress={()=>edit()}/>
                     }
+                    <Button title={'완료 기록'} />
                 </BottomTool>
             </View>
         </View>
