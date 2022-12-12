@@ -1,7 +1,7 @@
 /*eslint-disable*/
 // import { Text } from "@rneui/themed";
 import { useCallback, useState } from "react";
-import { Modal, StyleSheet, Switch, TextInput, TouchableOpacity, View, Button, Text } from "react-native";
+import { Modal, StyleSheet, Switch, TextInput, TouchableOpacity, View, Button, Text, ActivityIndicator } from "react-native";
 import { Cell, Row, Table, TableWrapper } from "react-native-table-component";
 import BottomTool from "../components/BottonTool";
 import { bdRowHead, bdSampleBody } from "../sampleData";
@@ -14,6 +14,7 @@ const BOMDetail=({route, navigation})=>{
     const [EA,setEA] = useState(0);
     const [isEdit, setIsEdit] = useState(false);
     const [fileResponse, setFileResponse] = useState([]);
+    const [loading, setLoading] = useState(false); //나중에는 true로
 
     const rowHead=bdRowHead;
     const sampleBody=bdSampleBody;
@@ -39,14 +40,25 @@ const BOMDetail=({route, navigation})=>{
     }
     
     const plan = (data, index) => (
-        <TouchableOpacity onPress={() => {
-        //   setModalData(index);
-          setModalVisible(!modalVisible)
-          }}>
-          <View style={styles.btn}>
-            <Text style={styles.btnText}>계획</Text>
-          </View>
-        </TouchableOpacity>
+        <View>
+            {
+                isEdit ?
+                <TouchableOpacity onPress={() => alert('이 항목에대한 수정 완료')}>
+                    <View style={styles.btn}>
+                        <Text style={styles.btnText}>완료</Text>
+                    </View>
+                </TouchableOpacity>
+                :
+                <TouchableOpacity onPress={() => {
+                    // setModalData(index);
+                      setModalVisible(!modalVisible)
+                      }}>
+                    <View style={styles.btn}>
+                        <Text style={styles.btnText}>계획</Text>
+                    </View>
+                </TouchableOpacity>
+            }
+        </View>
       );
 
     const cellInfo = (data) =>(
@@ -100,9 +112,9 @@ const BOMDetail=({route, navigation})=>{
 
     return(
         <View style={styles.container}>
-            <Text>this is BOMDetail page</Text>
+            {/* <Text>this is BOMDetail page</Text>
             <Text>{id}</Text>
-            <Text>{title}</Text>
+            <Text>{title}</Text> */}
 
             <Modal
                 animationType="none"
@@ -124,9 +136,12 @@ const BOMDetail=({route, navigation})=>{
                 </View>
             </Modal>
 
-            <Table>
-                <Row data={rowHead} style={styles.head} />
-                
+            {
+                loading ?
+                <ActivityIndicator size={'large'} />
+                :
+                <Table>
+                    <Row data={rowHead} style={styles.head} />
                     {
                         sampleBody.map((rowData, index)=>(
                             <TableWrapper style={styles.tableRow}>
@@ -140,8 +155,10 @@ const BOMDetail=({route, navigation})=>{
                             </TableWrapper>
                         ))
                     }
-                
-            </Table>
+                </Table>
+            }
+
+            
 
             <BottomTool navigation={navigation}>
                 {

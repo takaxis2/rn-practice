@@ -1,8 +1,9 @@
 /* eslint-disable */
 // import { Button } from "@rneui/themed";
-import { useState } from "react";
-import { Modal, StyleSheet, Text, View, Button } from "react-native"
+import { useEffect, useState } from "react";
+import { Modal, StyleSheet, Text, View, Button, ActivityIndicator } from "react-native"
 import { Cell, Row, Table, TableWrapper } from "react-native-table-component";
+import { getAllModelApi } from "../api";
 import BottomTool from "../components/BottonTool";
 import { BomPopupData, Boms } from "../sampleData";
 
@@ -12,9 +13,25 @@ const BOM= ({navigation}) =>{
     const bomPopupData =BomPopupData;
 
     const [modalVisible, setModalVisible]= useState(false);
+    const [loading, setLoading] = useState(true);
 
+    const [data, setData]= useState([]);
+    const [modalData, setModalData] = useState({});
 
-    const [data, setData]= useState();
+    const getModels = async() =>{
+        try {
+            const json = await getAllModelApi();
+            console.log(json);
+            setData(json);
+            setLoading(!loading);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(()=>{
+        getModels()
+    },[]);
 
 
     return (
@@ -33,7 +50,7 @@ const BOM= ({navigation}) =>{
                         </View>
 
                         <Table>
-                            <Row data={[data]} style={styles.head} />
+                            <Row data={[modalData.name]} style={styles.head} />
                             <TableWrapper style={styles.flexRow}>
                                 <TableWrapper style={styles.table}>
                                     {
@@ -63,10 +80,14 @@ const BOM= ({navigation}) =>{
             </Modal>
 
             {
-                boms.map((data, index)=>(
-                    <View key={index}><Button title={data} onPress={()=>{
-                        setData(data);
+                loading ?
+                <ActivityIndicator size={'large'} />
+                :
+                data.map((data, index)=>(
+                    <View key={index}><Button title={data.name} onPress={()=>{
+                        setModalData(data);
                         setModalVisible(!modalVisible);
+                        //해당 bom 리스트 받아오기 g/l로 두개씩 useState로 관리하게
                         }}/>
                         </View>
                 ))

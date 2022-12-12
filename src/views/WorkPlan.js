@@ -1,7 +1,7 @@
 /* eslint-disable */
 // import { Button } from "@rneui/base";
 import { useState } from "react";
-import {  Alert, StyleSheet, Text, TouchableOpacity, View, Button } from "react-native"
+import {  Alert, StyleSheet, Text, TouchableOpacity, View, Button, ActivityIndicator } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Table, Row, TableWrapper, Cell } from "react-native-table-component";
 import { deleteWorkPlanAPi, patchWorkPlanAPi } from "../api";
@@ -15,6 +15,8 @@ const WorkPlan= ({navigation}) =>{
     
 
     const [isEdit, setIsEdit] = useState(false);
+    const [loading, setLoading] = useState(false); //나중에는 true로
+    const [prev, setPrev] = useState(false);
 
     const complete = (data)=>(
         <View>
@@ -96,22 +98,26 @@ const WorkPlan= ({navigation}) =>{
     return (
         <View>
             <View>
-                <Text>This is WorkPlan page</Text>
-                <Table>
-                    <Row data={rowHead} style={styles.head} />
-                    {
-                        data.map((rowData, index)=>(
-                            <TableWrapper key={index} style={styles.tableRow}>
-                                {
-                                    rowData.map((cData, cIndex)=>(
-                                        <Cell key={cIndex} data={typeof cData === 'boolean' ? convert(cData) : cData} />
-                                    ))
-                                }
-                                <Cell data={complete(rowData)} />
-                            </TableWrapper>
-                        ))
-                    }
-                </Table>
+                {
+                  loading ?
+                  <ActivityIndicator size={'large'} />
+                  :
+                  <Table>
+                      <Row data={rowHead} style={styles.head} />
+                      {
+                          data.map((rowData, index)=>(
+                              <TableWrapper key={index} style={styles.tableRow}>
+                                  {
+                                      rowData.map((cData, cIndex)=>(
+                                          <Cell key={cIndex} data={typeof cData === 'boolean' ? convert(cData) : cData} />
+                                      ))
+                                  }
+                                  <Cell data={complete(rowData)} />
+                              </TableWrapper>
+                          ))
+                      }
+                  </Table>
+                }
                 <BottomTool navigation={navigation}>
                     {
                         isEdit?
@@ -119,7 +125,7 @@ const WorkPlan= ({navigation}) =>{
                         :
                         <Button title={'수정'} onPress={()=>edit()}/>
                     }
-                    <Button title={'완료 기록'} />
+                    <Button title={prev ? '현재 기록' : '완료 기록'} onPress={()=>{setPrev(!prev)}}/>
                 </BottomTool>
             </View>
         </View>

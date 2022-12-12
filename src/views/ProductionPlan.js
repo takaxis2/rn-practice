@@ -1,9 +1,9 @@
 /* eslint-disable */
 import { useCallback, useState } from "react";
-import { Alert, StatusBar, StyleSheet, Text, TouchableOpacity, View, Button, ScrollView } from "react-native"
+import { Alert, StatusBar, StyleSheet, Text, TouchableOpacity, View, Button, ScrollView, ActivityIndicator } from "react-native"
 import BottomTool from "../components/BottonTool";
 import  DocumentPicker  from 'react-native-document-picker'
-// import { Button } from "@rneui/themed";
+import FileViewer from "react-native-file-viewer";
 import { Row, Rows, Table, TableWrapper, Cell } from "react-native-table-component";
 import { pRow, pData } from "../sampleData";
 import { deleteProdPlanAPi, patchProdPlanAPi } from "../api";
@@ -15,6 +15,8 @@ const ProductionPlan= ({navigation}) =>{
 
   const [fileResponse, setFileResponse] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
+  const [loading, setLoading] = useState(false); //나중에 false로 바꿀것
+  const [prev, setPrev] = useState(false);
 
   const handleDocumentSelection = useCallback(async () => {
     try {
@@ -26,6 +28,20 @@ const ProductionPlan= ({navigation}) =>{
       console.warn(err);
     }
   }, []);
+
+  const viewFile = async() =>{
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.allFiles],
+      });
+      setFileResponse(res);
+
+      console.log('view file');
+      await FileViewer.open(res.uri); //이게 작동을 안하네
+    } catch (e) {
+      // error
+    }
+  }
 
   const complete = (data)=>(
     
@@ -95,42 +111,50 @@ const ProductionPlan= ({navigation}) =>{
 
   return (
     <View>
-      <View style={styles.container} >
-        <View style={[styles.border, styles.center]}>
-          <StatusBar barStyle={'dark-content'} />
-          {fileResponse.map((file, index) => (
-            <Text
-              key={index.toString()}
-              style={styles.uri}
-              numberOfLines={1}
-              ellipsizeMode={'middle'}>
-              {file?.uri}
-            </Text>
-          ))}
-          <Button title="Select " onPress={handleDocumentSelection} />
-        </View>
-        
-        <View style={styles.border}>
-            <Table>
-              <Row data={row} />
-              {/* <Rows data={rowData} /> */}
-              {
-                data.map((rowData, index)=>(
-                  <TableWrapper key={index} style={styles.tableRow}>
-                    {
-                      rowData.map((cData,cIndex)=>(
-                        <Cell key={cIndex} data={cData}/>
-                      ))
-                      
-                    }
-                      <Cell data={complete(rowData)}/>
-                    
-                  </TableWrapper>
-                ))
-              }
-            </Table>
-        </View>
-      </View>
+      {
+        loading ?
+        <ActivityIndicator size={'large'} />
+        :
+        <>
+          <View style={styles.container} >
+            <View style={[styles.border, styles.center]}>
+              <StatusBar barStyle={'dark-content'} />
+              {fileResponse.map((file, index) => (
+                <Text
+                  key={index.toString()}
+                  style={styles.uri}
+                  numberOfLines={1}
+                  ellipsizeMode={'middle'}>
+                  {file?.uri}
+                </Text>
+              ))}
+              <Button title="Select " onPress={()=>viewFile() } />
+            </View>
+            
+            <View style={styles.border}>
+                <Table>
+                  <Row data={row} />
+                  {/* <Rows data={rowData} /> */}
+                  {
+                    data.map((rowData, index)=>(
+                      <TableWrapper key={index} style={styles.tableRow}>
+                        {
+                          rowData.map((cData,cIndex)=>(
+                            <Cell key={cIndex} data={cData}/>
+                          ))
+                          
+                        }
+                          <Cell data={complete(rowData)}/>
+                        
+                      </TableWrapper>
+                    ))
+                  }
+                </Table>
+            </View>
+          </View>
+        </>
+      }
+      
       
 
         <BottomTool navigation={navigation}>
@@ -140,7 +164,7 @@ const ProductionPlan= ({navigation}) =>{
                 :
                 <Button title={'수정'} onPress={()=>edit()} /> 
               }
-              <Button title={'완료 기록'} />
+              <Button title={prev ? '현재 기록':'완료 기록'} onPress={()=>{setPrev(!prev)}}/>
         </BottomTool>
     </View>
   )

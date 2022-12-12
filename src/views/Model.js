@@ -10,13 +10,14 @@ const Model= ({navigation}) =>{
     const modelData = model;
     const [data, setData] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const getModels = async() => {
         try {
             //   const result = 
               const json = await getAllModelApi();
-              console.log(json);
               setData(json);
+              setLoading(!loading);
               console.log(json);
         } catch (error) {
             console.log(error);
@@ -33,19 +34,10 @@ const Model= ({navigation}) =>{
         
         <View style={[styles.container,styles.spaceAround]}>
             
-            {/* <Modal
-                animationType="none"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={()=>setModalVisible(!modalVisible)}
-            >
-                <View style={styles.centeredView}>
-                    <View style={styles.modalView}>
-                        <Text>수정 입니다</Text>
-                    </View>
-                </View>
-            </Modal> */}
             {
+                loading ?
+                <ActivityIndicator size={'large'} />
+                :
                 data.map((data, index)=>(
                     <View key={index}>
                         <Button key={data.id} style={styles.button} title={data.name} onPress={()=>{navigation.push('ModelDetail',{title: data.name})}}/>

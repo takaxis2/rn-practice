@@ -4,6 +4,7 @@
 const URL = 'http://172.28.0.1:3300';  
 
 //model
+//모델 리스트  
 export const getAllModelApi = async () => {
   const result = await fetch(`${URL}/model`, {
     method: 'GET',
@@ -14,32 +15,69 @@ export const getAllModelApi = async () => {
   });
   return await result.json();
 };
+//모델 생성
 export const postModelAPi = async()=>{
   console.log('postModelAPi');
 }
+//모델 수정
 export const patchModelAPi = async()=>{
   console.log('patchModelAPi');
 }
 
 //model-detail
- export const getOneModelDetailAPi = async()=>{
+//모델 디테일 1개
+export const getOneModelDetailAPi = async()=>{
   console.log('getOneModelDetailAPi');
 }
-
- export const getAllModelDetailAPi = async()=>{
+//모델디테일 전체
+export const getAllModelDetailAPi = async(id)=>{
+  const result = await fetch(`${URL}/model-detail${id}/all`,{
+    method:'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+  });
   console.log('getAllModelDetailAPi');
+  return result.json();
 }
-
- export const postModelDetailAPi = async()=>{
+//모델 디테일 생성
+export const postModelDetailAPi = async(id,data)=>{
+  const result = await fetch(`${URL}/model-detail/${id}`,{
+    method:'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body:data,
+  });
   console.log('postModelDetailAPi');
+  return result.json();
 }
-
- export const updateModelDetailAPi = async()=>{
+//모델 디테일 수정
+export const patcheModelDetailAPi = async(id, data)=>{
+  const result = await fetch(`${URL}/model-detail/${id}`,{
+    method:'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body:data,
+  });
   console.log('updateModelDetailAPi');
+  return result.json();
 }
-
-export const deleteModelDetailAPi = async()=>{
+//모델 디테일 삭제
+export const deleteModelDetailAPi = async(id)=>{
+  const result = await fetch(`${URL}/model-detail/${id}`,{
+    method:'DELETE',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+  });
   console.log('deleteModelDetailAPi');
+  return result.json();
 }
 
 //bom

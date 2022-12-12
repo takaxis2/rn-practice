@@ -25,7 +25,7 @@ const ModelDetail= ({route, navigation}) =>{
     const [open, setOpen] = useState(false);
 
     const [modelDetail, setModelDetail] = useState([]);
-  
+    const [loading, setLoading] = useState(true);
 
 
     const tableHead =mdTableHead;
@@ -51,14 +51,26 @@ const ModelDetail= ({route, navigation}) =>{
     );
 
     const plan = (data, index) => (
-      <TouchableOpacity onPress={() => {
-        setModalData(data);
-        setModalVisible(!modalVisible)
-        }}>
-        <View>
-          <Text>계획</Text>
-        </View>
-      </TouchableOpacity>
+      <View>
+        {
+          isEdit ? 
+          <TouchableOpacity onPress={()=>alert('수정')}>
+            <View>
+              <Text>수정</Text>
+            </View>
+          </TouchableOpacity>
+          :
+          <TouchableOpacity onPress={() => {
+            setModalData(data);
+            setModalVisible(!modalVisible)
+            }}>
+            <View>
+              <Text>계획</Text>
+            </View>
+          </TouchableOpacity>
+        }
+      </View>
+      
     );
 
     const drawing= (data, index)=>(
