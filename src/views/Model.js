@@ -18,7 +18,7 @@ const Model= ({navigation}) =>{
               const json = await getAllModelApi();
               setData(json);
               setLoading(!loading);
-              console.log(json);
+            //   console.log(json);
         } catch (error) {
             console.log(error);
         }
@@ -40,7 +40,8 @@ const Model= ({navigation}) =>{
                 :
                 data.map((data, index)=>(
                     <View key={index}>
-                        <Button key={data.id} style={styles.button} title={data.name} onPress={()=>{navigation.push('ModelDetail',{title: data.name})}}/>
+                        <Button key={data.id} style={styles.button} title={data.name} onPress={()=>{
+                            navigation.push('ModelDetail',{modelId: data.id})}}/>
                     </View>
                     ))
 

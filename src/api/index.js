@@ -30,8 +30,8 @@ export const getOneModelDetailAPi = async()=>{
   console.log('getOneModelDetailAPi');
 }
 //모델디테일 전체
-export const getAllModelDetailAPi = async(id)=>{
-  const result = await fetch(`${URL}/model-detail${id}/all`,{
+export const getAllModelDetailAPi = async( id )=>{
+  const result = await fetch(`${URL}/model-detail/${id}/all`,{
     method:'GET',
     headers: {
       Accept: 'application/json',

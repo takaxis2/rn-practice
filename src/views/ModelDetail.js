@@ -3,33 +3,51 @@ import {  Alert, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View, But
 import BottomTool from "../components/BottonTool";
 import  DocumentPicker  from 'react-native-document-picker'
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 // import { Button, Input } from "@rneui/themed";
 // import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { mdTableData, mdTableHead } from "../sampleData";
 import { Icon } from "@rneui/themed";
+import { getAllModelDetailAPi } from "../api";
 
 const ModelDetail= ({route, navigation}) =>{
-    const { title } = route.params;
+    const { modelId } = route.params;
     
     const [isEdit, setIsEdit] = useState(false);
 
     const [fileResponse, setFileResponse] = useState([]);
 
     const [modalVisible, setModalVisible] = useState(false);
-    const [modalData, setModalData] = useState([]);
+    const [modalData, setModalData] = useState({});
 
     const [EA, setEA] = useState(0);
     const [dueMonth, setDueMonth] = useState();
     const [dueDate, setDueDate] = useState();
     const [open, setOpen] = useState(false);
 
-    const [modelDetail, setModelDetail] = useState([]);
+    const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
 
 
     const tableHead =mdTableHead;
     const tableData = mdTableData;
+
+    const getModelDetails = async () =>{
+      try {
+        const json = await getAllModelDetailAPi(modelId);
+        // console.log(json);
+        setData(json);
+        setLoading(!loading);
+      } catch (error) {
+        
+      }
+    }
+
+    useEffect(()=>{
+      getModelDetails();
+    },[])
+
+
 
     const handleDocumentSelection = useCallback(async () => {
       try {
@@ -75,12 +93,12 @@ const ModelDetail= ({route, navigation}) =>{
 
     const drawing= (data, index)=>(
       <View style={[styles.row, styles.spaceAround]}>
-        <TouchableOpacity onPress={()=>this.alert(`this is drawing ${data[0]}`)}>
+        <TouchableOpacity onPress={()=>this.alert(`this is drawing ${data}`)}>
         
         {isEdit ?
-          <TextInput value={data[1]}/>
+          <TextInput value={data}/>
             : 
-          <Text>{data[1]}</Text>
+          <Text>{data}</Text>
         }
 
         </TouchableOpacity>
@@ -119,7 +137,7 @@ const ModelDetail= ({route, navigation}) =>{
     
     return (
       <View style={styles.container}>
-        <Text>this is model {title}'s detail page</Text>
+        <Text>this is model {modelId}'s detail page</Text>
         <View style={[styles.row, styles.spaceBetween]}>
           <Button title={'이전'} />
           <Button title={'다음'} />
@@ -132,35 +150,38 @@ const ModelDetail= ({route, navigation}) =>{
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Text>model name : {modalData[1]}</Text>
-              {/* <Text>{dueDate}</Text>
-              <Text>{EA}</Text> */}
-
-              {/* <DateTimePickerModal
-              isVisible={open}
-              mode='date' 
-              onConfirm={(date)=>setDueDate(date)}
-              onCancel={()=>{setOpen(!open)}}
-              /> */}
+              <Text>model name : {modalData.name}</Text>
+              
               <View style={styles.row}>
                 <TextInput style={styles.input} value={dueMonth} onChangeText={setDueMonth} placeholder="납기월"/>
                 <TextInput style={styles.input} value={dueDate} onChangeText={setDueDate} placeholder="납기일"/>
               </View>
-              <Text onPress={()=>setOpen(!open)}>{dueDate}</Text>
+
+              <Text onPress={()=>setOpen(!open)}>{dueDate} {dueMonth}</Text>
               <TextInput style={styles.input} value={EA} onChangeText={setEA} placeholder="수량"/>
 
               <View style={[styles.spaceBetween, styles.row]}>
                 <Button title={'확인'} onPress={()=>{
-                  setEA(0);
-                  setDueDate();
-                  setModalVisible(!modalVisible);
+                  // 서버 통신 로직 필요
+                  const date = new Date();
+                  date.setMonth(dueMonth -1);
+                  date.setDate(dueDate);
+                  date.setHours(0);
+                  date.setMinutes(0);
+                  date.setSeconds(0);
+                  date.setMilliseconds(0);
+                  console.log(date);
 
+                  setEA(0);
+                  setDueDate(0);
+                  setDueMonth(0);
+                  setModalVisible(!modalVisible);
                 }} />
                 <Button title={'취소'} onPress={()=>{
 
                   setEA(0);
-                  setDueDate();
-
+                  setDueDate(0);
+                  setDueMonth(0)
                   setModalData([]);
                   setModalVisible(!modalVisible);
                   }} />
@@ -171,13 +192,21 @@ const ModelDetail= ({route, navigation}) =>{
         <Table>
           <Row data={tableHead} style={styles.head}  />
           {
-            tableData.map((rowData, index) => (
+            data.map((rowData, index) => (
               <TableWrapper key={index} style={styles.tableRow}>
                 {
-                  rowData.map((cellData, cellIndex) => (
-                    // <Cell key={cellIndex} data={cellIndex === 3 ? plan(cellData, index) : cellData} />
-                    <Cell key={cellIndex} data={cell(cellIndex, rowData, index)} />
-                  ))
+                  // rowData.map((cellData, cellIndex) => (
+                  //   // <Cell key={cellIndex} data={cellIndex === 3 ? plan(cellData, index) : cellData} />
+                  //   <Cell key={cellIndex} data={cell(cellIndex, rowData, index)} />
+                  // ))
+                  
+                  <>
+                    <Cell data={index +1} /> 
+                    {/* 위에거 rowData.id 였는데 보기 싫어서 바꿈 */}
+                    <Cell data={drawing(rowData.name)} />
+                    <Cell data={bom(rowData.id)} />
+                    <Cell data={plan(rowData)} />
+                  </>
                 }
               </TableWrapper>
             ))
