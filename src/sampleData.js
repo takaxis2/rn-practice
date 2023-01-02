@@ -1,4 +1,5 @@
 export const wRowHead=['id','생성날자', '∅', '치수', 'cnc', '축', '확', '단', '수량', '완료'];
+export const wPrevHead = ['id','생성날자','완료날자', '∅', '치수', 'cnc', '축', '확', '단', '수량'];
 export const wData=[
     [1, '11/30', 11, 21, 31, true, true, false, 100],
     [2, '11/30', 12, 22, 32, true, true, false, 200],
@@ -22,6 +23,7 @@ export const sRowData=[
     ];
 
 export const pRow = ['id', '생성날자', '품명', '납기', '수량', '완료']; 
+export const pPrevRow=['id', '생성날자', '품명', '납기', '수량']; 
 export const pData =[
     [1, '11/30','a','2023/10/10', 300],
     [2, '11/30','b','2023/10/20', 200],

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Modal, StyleSheet, Text, View, Button, ActivityIndicator } from "react-native"
 import { Cell, Row, Table, TableWrapper } from "react-native-table-component";
-import { getAllModelApi } from "../api";
+import { getAllGBomAPi, getAllLBomAPi, getAllModelApi, getAllModelDetailAPi } from "../api";
 import BottomTool from "../components/BottonTool";
 import { BomPopupData, Boms } from "../sampleData";
 
@@ -17,13 +17,32 @@ const BOM= ({navigation}) =>{
 
     const [data, setData]= useState([]);
     const [modalData, setModalData] = useState({});
+    const [bomList, setBomList] = useState([]);
+
+    // const [gBoms, setGBoms] =useState([]);
+    // const [lBoms, setLBoms] =useState([]);
+
+    // const getGBoms = async(id)=>{
+    //     const json = await getAllGBomAPi(id);
+    //     setGBoms(json);
+    // };
+    // const getLBoms = async(id)=>{
+    //     const json = await getAllLBomAPi(id);
+    //     setLBoms(json);
+    // };
+
+    const getModelDetails = async(id)=>{
+        const json = await getAllModelDetailAPi(id);
+        setBomList(json);
+        console.log(json);
+    }
 
     const getModels = async() =>{
         try {
             const json = await getAllModelApi();
-            console.log(json);
+            // console.log(json);
             setData(json);
-            setLoading(!loading);
+            setLoading(false);
         } catch (error) {
             console.log(error);
         }
@@ -51,18 +70,25 @@ const BOM= ({navigation}) =>{
 
                         <Table>
                             <Row data={[modalData.name]} style={styles.head} />
+                            <Row data={['g','l']} style={styles.head} />
                             <TableWrapper style={styles.flexRow}>
                                 <TableWrapper style={styles.table}>
                                     {
-                                        bomPopupData.map((data, index)=>(
-                                                <Cell key={index} data={data} style={styles.tableRow} onPress={()=>{navigation.push('BOMDetail',{id:index,title:data})}}/>
+                                        bomList.map((data, index)=>(
+                                                <Cell key={index} data={data.name} style={styles.tableRow} onPress={()=>{
+                                                    setModalVisible(!modalVisible);
+                                                    navigation.push('BOMDetail',{id:data.id, type:"g", });
+                                                }}/>
                                         ))
                                     }
                                 </TableWrapper>
                                 <TableWrapper style={styles.table}>
                                     {
-                                        bomPopupData.map((data, index)=>(
-                                                <Cell key={index} data={data} style={styles.tableRow} onPress={()=>{navigation.push('BOMDetail',{id:index,title:data})}}/>
+                                        bomList.map((data, index)=>(
+                                                <Cell key={index} data={data.name} style={styles.tableRow} onPress={()=>{
+                                                    setModalVisible(!modalVisible);
+                                                    navigation.push('BOMDetail',{id:data.id, type:"l"});
+                                                }}/>
                                         ))
                                     }
                                 </TableWrapper>
@@ -88,6 +114,9 @@ const BOM= ({navigation}) =>{
                         setModalData(data);
                         setModalVisible(!modalVisible);
                         //해당 bom 리스트 받아오기 g/l로 두개씩 useState로 관리하게
+                        getModelDetails(data.id);
+                        // getLBoms(data.id);
+                        // getGBoms(data.id);
                         }}/>
                         </View>
                 ))

@@ -1,24 +1,52 @@
 /* eslint-disable */
 // import { Button } from "@rneui/base";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {  Alert, StyleSheet, Text, TouchableOpacity, View, Button, ActivityIndicator } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Table, Row, TableWrapper, Cell } from "react-native-table-component";
-import { deleteWorkPlanAPi, patchWorkPlanAPi } from "../api";
+import { deleteWorkPlanAPi, getAllDoneWorkPlanAPi, getAllWorkPlanAPi, patchWorkPlanAPi, socket } from "../api";
 import BottomTool from "../components/BottonTool";
-import { wData, wRowHead } from "../sampleData";
+import { wData, wPrevHead, wRowHead } from "../sampleData";
 
 const WorkPlan= ({navigation}) =>{
 
-    const data = wData;
+    const Data = wData;
     const rowHead = wRowHead;
+    const pHead = wPrevHead;
     
 
     const [isEdit, setIsEdit] = useState(false);
-    const [loading, setLoading] = useState(false); //나중에는 true로
+    const [loading, setLoading] = useState(true); //나중에는 true로
     const [prev, setPrev] = useState(false);
+    const [data, setData] = useState([]);
+    const [prevData, setPrevData] = useState([]);
 
-    const complete = (data)=>(
+    const getWorkPlans =async () =>{
+      try {
+        const json = await getAllWorkPlanAPi();
+        setData(json)
+        
+      } catch (error) {
+        
+      }
+    }
+    const getPrevData= async()=>{
+      try {
+        const json = await getAllDoneWorkPlanAPi(0);
+        setPrevData(json)
+        // console.log(prevData);
+      } catch (error) {
+        
+      }
+    }
+
+    useEffect(()=>{
+      getWorkPlans();
+      getPrevData();
+      setLoading(false);
+    },[])
+
+    const complete = (d, index)=>(
         <View>
       {
         isEdit ?
@@ -29,7 +57,15 @@ const WorkPlan= ({navigation}) =>{
           [
             {
               text:'삭제',
-              onPress:()=>deleteWorkPlanAPi(),
+              onPress: async ()=>{
+                await deleteWorkPlanAPi(d.id);
+
+                const newData= [...data];
+                newData.splice(index, 1);
+                setData(newData);
+                socket.emit('work-plan');
+
+              },
             },
             {
               text:'취소',
@@ -54,7 +90,20 @@ const WorkPlan= ({navigation}) =>{
             [
               {
                 text:'완료',
-                onPress:()=>patchWorkPlanAPi(),
+                onPress:async ()=>{
+                  try {
+                    // console.log(data);
+                    await patchWorkPlanAPi(d.id);
+
+                    const newData= [...data];
+                    newData.splice(index, 1);
+                    setData(newData);
+                    socket.emit('work-plan');
+
+                  } catch (error) {
+                    
+                  }
+                },
               },
               {
                 text:'취소',
@@ -75,8 +124,6 @@ const WorkPlan= ({navigation}) =>{
     </View>
       );
 
-    
-    
     const check = (ox)=>(
         <View>
             <Text>{ox}</Text>
@@ -92,7 +139,6 @@ const WorkPlan= ({navigation}) =>{
     }
     const doneEdit = () => {
         setIsEdit(!isEdit);
-        // 서버 작업
     }
 
     return (
@@ -103,18 +149,57 @@ const WorkPlan= ({navigation}) =>{
                   <ActivityIndicator size={'large'} />
                   :
                   <Table>
-                      <Row data={rowHead} style={styles.head} />
                       {
-                          data.map((rowData, index)=>(
-                              <TableWrapper key={index} style={styles.tableRow}>
-                                  {
-                                      rowData.map((cData, cIndex)=>(
-                                          <Cell key={cIndex} data={typeof cData === 'boolean' ? convert(cData) : cData} />
-                                      ))
-                                  }
-                                  <Cell data={complete(rowData)} />
-                              </TableWrapper>
-                          ))
+                        prev ?
+                        <>
+                          <Row data={pHead} style={styles.head} />
+                          {
+                                prevData.map((rowData, index)=>(
+                                    <TableWrapper key={index} style={styles.tableRow}>
+                                        {/* {
+                                            rowData.map((cData, cIndex)=>(
+                                                <Cell key={cIndex} data={typeof cData === 'boolean' ? convert(cData) : cData} />
+                                            ))
+                                        } */}
+                                        <Cell data={index+1}/>
+                                        <Cell data={rowData.createdAt}/>
+                                        <Cell data={rowData.updatedAt}/>
+                                        <Cell data={rowData.bom.pi}/>
+                                        <Cell data={rowData.bom.size}/>
+                                        <Cell data={convert(rowData.bom.CNC)}/>
+                                        <Cell data={convert(rowData.bom.shorten)}/>
+                                        <Cell data={convert(rowData.bom.enrlgmnt)}/>
+                                        <Cell data={convert(rowData.bom.reduction)}/>
+                                        <Cell data={rowData.EA}/>
+                                    </TableWrapper>
+                                ))
+                            }
+                        </>
+                        :
+                        <>
+                          <Row data={rowHead} style={styles.head} />
+                            {
+                                data.map((rowData, index)=>(
+                                    <TableWrapper key={index} style={styles.tableRow}>
+                                        {/* {
+                                            rowData.map((cData, cIndex)=>(
+                                                <Cell key={cIndex} data={typeof cData === 'boolean' ? convert(cData) : cData} />
+                                            ))
+                                        } */}
+                                        <Cell data={index+1}/>
+                                        <Cell data={rowData.createdAt}/>
+                                        <Cell data={rowData.bom.pi}/>
+                                        <Cell data={rowData.bom.size}/>
+                                        <Cell data={convert(rowData.bom.CNC)}/>
+                                        <Cell data={convert(rowData.bom.shorten)}/>
+                                        <Cell data={convert(rowData.bom.enrlgmnt)}/>
+                                        <Cell data={convert(rowData.bom.reduction)}/>
+                                        <Cell data={rowData.EA}/>
+                                        <Cell data={complete(rowData, index)} />
+                                    </TableWrapper>
+                                ))
+                            }
+                        </>
                       }
                   </Table>
                 }

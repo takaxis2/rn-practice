@@ -1,34 +1,38 @@
 /*eslint-disable*/
 // import { Text } from "@rneui/themed";
-import { useCallback, useState } from "react";
-import { Modal, StyleSheet, Switch, TextInput, TouchableOpacity, View, Button, Text, ActivityIndicator } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { Modal, StyleSheet, Switch, TextInput, TouchableOpacity, View, Button, Text, ActivityIndicator, Alert } from "react-native";
 import { Cell, Row, Table, TableWrapper } from "react-native-table-component";
 import BottomTool from "../components/BottonTool";
 import { bdRowHead, bdSampleBody } from "../sampleData";
 import  DocumentPicker  from 'react-native-document-picker'
+import { getAllBomAPi, patchBomAPi, postWorkPlanAPi, socket } from "../api";
 
 const BOMDetail=({route, navigation})=>{
-    const {id, title} =route.params;
+    const {id, type} =route.params;
 
     const [modalVisible, setModalVisible]=useState(false);
+    const [modalData, setModalData]= useState({});
     const [EA,setEA] = useState(0);
     const [isEdit, setIsEdit] = useState(false);
     const [fileResponse, setFileResponse] = useState([]);
-    const [loading, setLoading] = useState(false); //나중에는 true로
+    const [loading, setLoading] = useState(true); //나중에는 true로
+    const [data, setData] = useState([]);
 
     const rowHead=bdRowHead;
     const sampleBody=bdSampleBody;
 
-    const handleDocumentSelection = useCallback(async () => {
-        try {
-          const response = await DocumentPicker.pick({
-            presentationStyle: 'fullScreen',
-          });
-          setFileResponse(response);
-        } catch (err) {
-          console.warn(err);
-        }
-      }, []);
+    const getBoms = async()=>{
+        const json = await getAllBomAPi(id,type);
+        // console.log(id, type);
+        setData(json);
+        setLoading(false);
+        // console.log(json);
+    }
+
+    useEffect(()=>{
+        getBoms();
+    },[]);
     
     const edit =() =>{
         setIsEdit(!isEdit);
@@ -39,18 +43,26 @@ const BOMDetail=({route, navigation})=>{
         // 서버 작업
     }
     
-    const plan = (data, index) => (
+    const plan = (d, index) => (
         <View>
             {
                 isEdit ?
-                <TouchableOpacity onPress={() => alert('이 항목에대한 수정 완료')}>
+                <TouchableOpacity onPress={async () =>{
+                    try {
+                        await patchBomAPi(data[index]);
+                        Alert.alert('수정','수정 완료');
+                        // console.log(data[index]);
+                    } catch (error) {   
+                    }
+                }}>
                     <View style={styles.btn}>
-                        <Text style={styles.btnText}>완료</Text>
+                        <Text style={styles.btnText}>확인</Text>
                     </View>
                 </TouchableOpacity>
                 :
                 <TouchableOpacity onPress={() => {
                     // setModalData(index);
+                      setModalData(d);
                       setModalVisible(!modalVisible)
                       }}>
                     <View style={styles.btn}>
@@ -61,33 +73,46 @@ const BOMDetail=({route, navigation})=>{
         </View>
       );
 
-    const cellInfo = (data) =>(
+    const cellInfo = (d, index, key) =>(
         <View style={[styles.row]}>
             {
                 isEdit ?
-                <TextInput value={`${data}`} />
+                <TextInput value={`${d}`} onChangeText={(txt)=>{
+                    const newData = [...data];
+                    newData[index][key] = txt;
+                    setData(newData);
+                }} />
                 :
-                <Text>{data}</Text>
+                <Text>{d}</Text>
 
             }
         </View>
     );
 
 
-    const check = (ox, data)=>(
+    const check = (d, index, key)=>(
         <View>
             {
                 isEdit ?
-                <Switch value={data} />
+                <Switch value={d} onValueChange={(val)=>{
+                    const newData =[...data];
+                    newData[index][key] = !d;
+                    setData(newData);
+                }}/>
                 :
-                <Text>{ox}</Text>
+                d ?
+                <Text>{'O'}</Text>
+                :
+                <Text>{'X'}</Text>
 
             }
         </View>
     );
-    const convert = (data)=> {
-        if(data) return check('O', data);
-        else if(!data) return check('X', data);
+    
+    //얘도 안사용
+    const convert = (data, index)=> {
+        if(data) return check(data);
+        else if(!data) return check( data);
     } 
     const drawing = (data) =>(
         <View>
@@ -103,7 +128,8 @@ const BOMDetail=({route, navigation})=>{
             }
         </View>
     )
-
+    
+    //얘도 안사용
     const cell = (data, index) =>{
         if(index === 0) return drawing(data);
         else if(typeof data === 'boolean') return convert(data);
@@ -112,9 +138,7 @@ const BOMDetail=({route, navigation})=>{
 
     return(
         <View style={styles.container}>
-            {/* <Text>this is BOMDetail page</Text>
-            <Text>{id}</Text>
-            <Text>{title}</Text> */}
+            
 
             <Modal
                 animationType="none"
@@ -126,9 +150,22 @@ const BOMDetail=({route, navigation})=>{
                         <Text>수량</Text>
                         <TextInput value={EA} onChangeText={setEA} placeholder={'수량을 입력하세요'} />
                         <View style={[styles.row, styles.spaceBetween]}>
-                            <Button title={'확인'} onPress={()=>{
+                            <Button title={'확인'} onPress={async ()=>{
                                 //여기서 값 저장 로직
+                                const workPlan={};
+                                workPlan.bomId = modalData.id;
+                                workPlan.EA = EA;
+                                // console.log(modalData);
+                                try {
+                                    await postWorkPlanAPi(workPlan);
+                                } catch (error) {
+                                }
+                                Alert.alert('계획','일일계획 생성이 완료되었습니다');
+                                setEA(0);
                                 setModalVisible(!modalVisible);
+
+                                socket.emit('work-plan');
+
                             }}/>
                             <Button title={'취소'} onPress={()=>setModalVisible(!modalVisible)}/>
                         </View>
@@ -143,15 +180,24 @@ const BOMDetail=({route, navigation})=>{
                 <Table>
                     <Row data={rowHead} style={styles.head} />
                     {
-                        sampleBody.map((rowData, index)=>(
+                        data.map((rowData, index)=>(
                             <TableWrapper style={styles.tableRow}>
-                                {
-                                    rowData.map((cellData, cellIndex)=>(
+                                {/* {
+                                    data.map((cellData, cellIndex)=>(
                                         // <Cell key={cellIndex} data={typeof cellData === 'boolean' ? convert(cellData) : cellInfo(cellData)} />
                                         <Cell key={cellIndex} data={cell(cellData, cellIndex)} />
                                     ))
-                                }
-                                <Cell data={plan(rowData)}/>
+                                } */}
+                                <Cell data={index +1} />
+                                <Cell data={cellInfo(rowData.pi, index, 'pi')} />
+                                <Cell data={cellInfo(rowData.size, index, 'size')} />
+                                <Cell data={check(rowData.CNC, index, 'CNC')} />
+                                <Cell data={check(rowData.T, index, 'T')} />
+                                <Cell data={check(rowData.enlrgmnt, index, 'enlrgmnt')} />
+                                <Cell data={check(rowData.reduction, index, 'reduction')} />
+                                <Cell data={check(rowData.shorten, index, 'shorten')} />
+                                <Cell data={cellInfo(rowData.requirement, index, 'requirement')} />
+                                <Cell data={plan(rowData, index)}/>
                             </TableWrapper>
                         ))
                     }

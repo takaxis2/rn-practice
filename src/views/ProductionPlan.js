@@ -1,21 +1,24 @@
 /* eslint-disable */
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Alert, StatusBar, StyleSheet, Text, TouchableOpacity, View, Button, ScrollView, ActivityIndicator } from "react-native"
 import BottomTool from "../components/BottonTool";
-import  DocumentPicker  from 'react-native-document-picker'
+import DocumentPicker  from 'react-native-document-picker'
 import FileViewer from "react-native-file-viewer";
 import { Row, Rows, Table, TableWrapper, Cell } from "react-native-table-component";
-import { pRow, pData } from "../sampleData";
-import { deleteProdPlanAPi, patchProdPlanAPi } from "../api";
+import { pRow, pData, pPrevRow } from "../sampleData";
+import { deleteProdPlanAPi, getAllDoneProdPlanAPI, getAllProdPlanAPi, patchProdPlanAPi, socket } from "../api";
 
 const ProductionPlan= ({navigation}) =>{
   
   const row = pRow;
-  const data = pData;
+  const prevRow = pPrevRow;
+  const Data = pData;
 
   const [fileResponse, setFileResponse] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
-  const [loading, setLoading] = useState(false); //나중에 false로 바꿀것
+  const [loading, setLoading] = useState(true); //나중에 false로 바꿀것
+  const [data, setData] = useState([]);
+  const [doneData, setDoneData] = useState([]);
   const [prev, setPrev] = useState(false);
 
   const handleDocumentSelection = useCallback(async () => {
@@ -36,14 +39,47 @@ const ProductionPlan= ({navigation}) =>{
       });
       setFileResponse(res);
 
-      console.log('view file');
-      await FileViewer.open(res.uri); //이게 작동을 안하네
+      console.log(res);
+
+      const uri = res[0].uri;
+      // uri.replace('content://', '')
+
+      FileViewer.open(uri)
+      .then(()=> console.log('success'))
+      .catch((error)=>console.log(error));
+      //이게 작동을 안하네
     } catch (e) {
       // error
     }
   }
 
-  const complete = (data)=>(
+  const getProdPlans = async ()=>{
+    try {
+      const json = await getAllProdPlanAPi();
+      setData(json);
+      // console.log(json);
+    } catch (error) {
+      
+    }
+  }
+
+  const getDoneData = async ()=>{
+    try {
+      const json = await getAllDoneProdPlanAPI(0);
+      setDoneData(json);
+      console.log(doneData);
+    } catch (error) {
+      
+    }
+  }
+
+  useEffect(()=>{
+    getProdPlans();
+    getDoneData();
+    setLoading(false);
+  },[])
+
+  const complete = (d, index)=>(
     
     <View>
       {
@@ -55,7 +91,18 @@ const ProductionPlan= ({navigation}) =>{
           [
             {
               text:'삭제',
-              onPress:()=>deleteProdPlanAPi(),
+              onPress:async ()=>{
+                try {
+                  await deleteProdPlanAPi(d.id);
+
+                  const newData = [...data];
+                  newData.splice(index, 1);
+                  setData(newData);
+                  socket.emit('prod-plan');
+                  
+                } catch (error) {
+                }
+              },
             },
             {
               text:'취소',
@@ -80,7 +127,14 @@ const ProductionPlan= ({navigation}) =>{
             [
               {
                 text:'완료',
-                onPress:()=>patchProdPlanAPi(),
+                onPress:async ()=>{
+                  await patchProdPlanAPi(d.id);
+                  
+                  const newData = [...data];
+                  newData.splice(index, 1);
+                  setData(newData);
+                  socket.emit('prod-plan');
+                },
               },
               {
                 text:'취소',
@@ -132,24 +186,42 @@ const ProductionPlan= ({navigation}) =>{
             </View>
             
             <View style={styles.border}>
-                <Table>
+              
+                {
+                  prev ?
+                  <Table>
+                    <Row data={prevRow}/>
+                    {
+                      data.map((rowData, index)=>(
+                        <TableWrapper key={index} style={styles.tableRow}>
+                          <Cell data={index + 1}/>
+                          <Cell data={rowData.createdAt}/>
+                          <Cell data={rowData.modelDetail.name}/>
+                          <Cell data={rowData.dueDate}/>
+                          <Cell data={rowData.EA}/>
+                        </TableWrapper>
+                      ))
+                    }
+                  </Table>
+                  :
+                  <Table>
                   <Row data={row} />
-                  {/* <Rows data={rowData} /> */}
                   {
                     data.map((rowData, index)=>(
                       <TableWrapper key={index} style={styles.tableRow}>
-                        {
-                          rowData.map((cData,cIndex)=>(
-                            <Cell key={cIndex} data={cData}/>
-                          ))
-                          
-                        }
-                          <Cell data={complete(rowData)}/>
+                        
+                          <Cell data={index +1}/>
+                          <Cell data={rowData.createdAt}/>
+                          <Cell data={rowData.modelDetail.name}/>
+                          <Cell data={rowData.dueDate}/>
+                          <Cell data={rowData.EA}/>
+                          <Cell data={complete(rowData, index)}/>
                         
                       </TableWrapper>
                     ))
                   }
                 </Table>
+                }
             </View>
           </View>
         </>

@@ -2,14 +2,40 @@
 import { StyleSheet, View} from 'react-native';
 import { Button } from "@rneui/themed";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Badge } from '@rneui/base';
+import { useEffect, useState } from 'react';
+import { socket } from '../api';
 
 const Home = ({navigation}) => {
+
+  const [wpTask, setWpTask] = useState(0);
+  const [ppTask, setPpTask] = useState(0);
+  
+
+  useEffect(()=>{
+    socket.emit('work-plan');
+    socket.on('wpNotification',(e)=>{
+      // console.log(e);
+      setWpTask(e);
+    });
+  },[]);
+
+  useEffect(()=>{
+    socket.emit('prod-plan');
+    socket.on('ppNotification',(e)=>{
+      setPpTask(e);
+    })
+  },[]);
+
   return ( 
     // <SafeAreaView>
       <View style={[styles.spaceAround, styles.container]}>
         <View><Button size="lg" title ="모델" onPress={()=>navigation.push('Model')} /></View>
-        <View><Button size="lg" title="생산 계획" onPress={()=>navigation.push('ProductionPlan')} /></View>
-        <View><Button size="lg" title ="일일 작업 계획" onPress={()=>navigation.push('WorkPlan')}/></View>
+        <View><Button size="lg" title={`생산 계획 : ${ppTask}`} onPress={()=>navigation.push('ProductionPlan')} /></View>
+        <View >
+          <Button size="lg" title ={`일일 작업 계획 : ${wpTask}`} onPress={()=>navigation.push('WorkPlan')}/>
+          
+        </View>
         <View><Button size="lg" title ="B.O.M" onPress={()=>navigation.push('BOM')}/></View>
         {/* <View><Button size="lg" title ="도면" onPress={()=>navigation.push('Drawing')}/></View>
         <View><Button size="lg" title ="재고 현황" onPress={()=>navigation.push('Stock')}/></View>
@@ -28,6 +54,9 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         flexWrap: "wrap",
       },
+    column:{
+      flexDirection:"column"
+    },
     spaceBetween: {
         justifyContent: 'space-between'
     },
