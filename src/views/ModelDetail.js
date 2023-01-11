@@ -1,5 +1,5 @@
 /* eslint-disable */
-import {  Alert, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View, Button, ActivityIndicator } from "react-native"
+import {  Alert, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View, Button, ActivityIndicator, Image, ScrollView } from "react-native"
 import BottomTool from "../components/BottonTool";
 import  DocumentPicker  from 'react-native-document-picker'
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
@@ -8,8 +8,10 @@ import { useCallback, useEffect, useState } from "react";
 // import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { mdTableData, mdTableHead } from "../sampleData";
 import { Icon } from "@rneui/themed";
-import { getAllModelDetailAPi, patchModelDetailAPi, postProdPlanAPi, socket } from "../api";
+import { getAllModelDetailAPi, patchModelDetailAPi, postDrawingApi, postProdPlanAPi, socket } from "../api";
 import { Overlay } from "@rneui/base";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import ImageModal from 'react-native-image-modal';
 
 const ModelDetail= ({route, navigation}) =>{
     const { modelId } = route.params;
@@ -17,6 +19,9 @@ const ModelDetail= ({route, navigation}) =>{
     const [isEdit, setIsEdit] = useState(false);
 
     const [fileResponse, setFileResponse] = useState([]);
+
+    const [imageVisible, setImageVisible] = useState(false);
+    const [image, setImage] = useState({});
 
     const [modalVisible, setModalVisible] = useState(false);
     const [modalData, setModalData] = useState({});
@@ -39,6 +44,7 @@ const ModelDetail= ({route, navigation}) =>{
         // console.log(json);
         setData(json);
         setLoading(false);
+        // console.log(data);
       } catch (error) {
         
       }
@@ -61,6 +67,58 @@ const ModelDetail= ({route, navigation}) =>{
       }
     }, []);
 
+    const imageSelection= async(id)=>{
+      Alert.alert(
+        "뭘로 올릴래?",
+        "선택해",
+        [
+          {
+            text: "카메라로 찍기",
+            onPress: async() =>{
+              const result = await launchCamera({
+                mediaType : 'photo', 
+                cameraType : 'back', 
+              });
+                if (result.didCancel){ 
+                  return null;
+                }
+                const localUri = result.assets[0].uri;
+                const uriPath = localUri.split("//").pop();
+                const imageName = localUri.split("/").pop();
+                // setPhoto("file://"+uriPath);
+            }
+          },
+          {
+            text: "앨범에서 선택",
+            onPress: async() =>{
+              const result = await launchImageLibrary();
+              if (result.didCancel){
+                return null;
+              } 
+              const localUri = result.assets[0].uri;
+              const uriPath = localUri.split("//").pop();
+              const imageName = localUri.split("/").pop();
+              
+
+              const newData = [...data];
+              newData[id].drawing = localUri;
+              console.log(result);
+              setData(newData);
+
+              const img={};
+              img.name = result.assets[0].fileName;
+              img.uri = localUri;
+              img.type = result.assets[0].type;
+              setImage(img);
+              console.log(img);
+
+            }
+          },
+        ],
+        {cancelable: true}
+      );
+    };
+
     const bom = (data, index)=>(
       <TouchableOpacity onPress={()=>{navigation.push('BOMDetail', {title: data})}}>
         <View>
@@ -74,15 +132,23 @@ const ModelDetail= ({route, navigation}) =>{
         {
           isEdit ? 
           <TouchableOpacity onPress={async ()=>{
-            console.log(data[index]);
+            // console.log(data[index]);
             // 서버에 이미지를 올리고
             //그 결과를 받아서 수정
+            const drawingData = new FormData();
+
+              drawingData.append('modelDetailId',data[index].id);
+              drawingData.append('fileName',image.name);
+              drawingData.append('image',image);
+              // console.log(drawingData);
             try {
-              await patchModelDetailAPi(data[index].id, data[index]);
+      
+              await postDrawingApi(drawingData);
+              // await patchModelDetailAPi(data[index].id, data[index]);
             } catch (error) {
               
             }
-            Alert.alert('완료','수정이 완료되었습니다');
+            Alert.alert('수정','수정이 완료되었습니다');
           }}>
             <View>
               <Text>확인</Text>
@@ -104,7 +170,7 @@ const ModelDetail= ({route, navigation}) =>{
 
     const drawing= (d, index)=>(
       <View style={[styles.row, styles.spaceAround]}>
-        <TouchableOpacity onPress={()=>this.alert(`this is drawing ${data[index].name}`)}>
+        <TouchableOpacity onPress={()=>setImageVisible(!imageVisible)}>
         
         {isEdit ?
           <TextInput value={d} onChangeText={(txt)=>{
@@ -119,7 +185,7 @@ const ModelDetail= ({route, navigation}) =>{
         }
 
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleDocumentSelection}>
+        <TouchableOpacity onPress={()=>imageSelection(index)}>
 
           {
             isEdit && 
@@ -160,6 +226,22 @@ const ModelDetail= ({route, navigation}) =>{
           <Button title={'이전'} />
           <Button title={'다음'} />
         </View>
+        <Modal
+        animationType="none"
+        transparent={true}
+        visible={imageVisible}
+        onRequestClose={()=>setImageVisible(!imageVisible)}
+        >
+          <ScrollView>
+            {/* <ImageModal 
+            resizeMode="contain" 
+            style={{width:image.assets[0].width, height: image.assets[0].height}} 
+            source={{uri:`${image.assets[0].uri}`}}/>  */}
+            {/* <Image style={{width:image.assets[0].width, height: image.assets[0].height}} source={{uri:`${image.assets[0].uri}`}}/> */}
+          </ScrollView>
+
+        </Modal>
+
         <Modal
           animationType="none"
           transparent={true}
@@ -250,6 +332,10 @@ const ModelDetail= ({route, navigation}) =>{
             }
         </Table>
         }
+        {/* <ImageModal 
+        resizeMode="contain" 
+        style={{width:250,height: 250}} 
+        source={{uri:'file:///data/user/0/com.awesomeproject/cache/rn_image_picker_lib_temp_b74cb9ab-127a-4c5e-bb05-81f3cc74dca9.png'}}/> */}
        
         <BottomTool navigation={navigation} >
           {

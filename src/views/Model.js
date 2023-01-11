@@ -17,7 +17,7 @@ const Model= ({navigation}) =>{
             //   const result = 
               const json = await getAllModelApi();
               setData(json);
-              setLoading(!loading);
+              setLoading(false);
             //   console.log(json);
         } catch (error) {
             console.log(error);

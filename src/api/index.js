@@ -4,8 +4,8 @@
 import { io } from "socket.io-client";
 
 // const URL = 'https://10.0.2.2:3300';  
-const URL = 'http://172.18.192.1:3300';
-const socketURL = 'ws://172.18.192.1:3300/notification';  
+const URL = 'http://172.29.48.1:3300';
+const socketURL = 'ws://172.29.48.1:3300/notification';  
 
 //model
 //모델 리스트  
@@ -250,5 +250,22 @@ export const deleteProdPlanAPi = async(id)=>{
   console.log('deleteProdPlanAPi');
   return result.json();
 }
+
+//drawing
+export const postDrawingApi =async(data)=>{
+  const result = await fetch(`${URL}/drawing`,{
+    method:'POST',
+    
+    body:data,
+  })
+  console.log('postDrawingApi');
+  return result.json();
+};
+
+//bom-drawing
+
+export const postBomDrawingApi= async(data)=>{
+  
+};
 
 export const socket = io(`${socketURL}`);
