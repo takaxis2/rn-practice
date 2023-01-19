@@ -23,6 +23,7 @@ const BOMDetail=({route, navigation})=>{
     const sampleBody=bdSampleBody;
 
     const getBoms = async()=>{
+        console.log(id, type);
         const json = await getAllBomAPi(id,type);
         // console.log(id, type);
         setData(json);

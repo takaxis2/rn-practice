@@ -1,14 +1,11 @@
 /* eslint-disable */
-import {  Alert, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View, Button, ActivityIndicator, Image, ScrollView } from "react-native"
+import {  Alert, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View, Button, ActivityIndicator, Image, ScrollView, useWindowDimensions } from "react-native"
 import BottomTool from "../components/BottonTool";
 import  DocumentPicker  from 'react-native-document-picker'
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
 import { useCallback, useEffect, useState } from "react";
-// import { Button, Input } from "@rneui/themed";
-// import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { mdTableData, mdTableHead } from "../sampleData";
-import { Icon } from "@rneui/themed";
-import { getAllModelDetailAPi, patchModelDetailAPi, postDrawingApi, postProdPlanAPi, socket } from "../api";
+import { getAllModelDetailAPi, patchModelDetailAPi, postDrawingApi, postProdPlanAPi, socket, URL } from "../api";
 import { Overlay } from "@rneui/base";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import ImageModal from 'react-native-image-modal';
@@ -26,6 +23,9 @@ const ModelDetail= ({route, navigation}) =>{
     const [modalVisible, setModalVisible] = useState(false);
     const [modalData, setModalData] = useState({});
 
+    const [bomModal,setBomModal] =useState(false);
+    const [bomModalData, setBomModalData]= useState({});
+
     const [EA, setEA] = useState(0);
     const [dueMonth, setDueMonth] = useState();
     const [dueDate, setDueDate] = useState();
@@ -34,6 +34,8 @@ const ModelDetail= ({route, navigation}) =>{
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const{ width, height }=useWindowDimensions();
+
 
     const tableHead =mdTableHead;
     const tableData = mdTableData;
@@ -41,7 +43,7 @@ const ModelDetail= ({route, navigation}) =>{
     const getModelDetails = async () =>{
       try {
         const json = await getAllModelDetailAPi(modelId);
-        // console.log(json);
+        console.log(json);
         setData(json);
         setLoading(false);
         // console.log(data);
@@ -102,7 +104,7 @@ const ModelDetail= ({route, navigation}) =>{
 
               const newData = [...data];
               newData[id].drawing = localUri;
-              console.log(result);
+              // console.log(result);
               setData(newData);
 
               const img={};
@@ -110,7 +112,7 @@ const ModelDetail= ({route, navigation}) =>{
               img.uri = localUri;
               img.type = result.assets[0].type;
               setImage(img);
-              console.log(img);
+              // console.log(img);
 
             }
           },
@@ -119,8 +121,13 @@ const ModelDetail= ({route, navigation}) =>{
       );
     };
 
-    const bom = (data, index)=>(
-      <TouchableOpacity onPress={()=>{navigation.push('BOMDetail', {title: data})}}>
+    const bom = (d, index)=>(
+      <TouchableOpacity onPress={()=>{
+        //null 값이 아닐때만
+
+          setBomModal(!bomModal);
+          setBomModalData(d);
+      }}>
         <View>
           <Text>B.O.M</Text>
         </View>
@@ -143,8 +150,14 @@ const ModelDetail= ({route, navigation}) =>{
               // console.log(drawingData);
             try {
       
-              await postDrawingApi(drawingData);
-              // await patchModelDetailAPi(data[index].id, data[index]);
+              const drawing = await postDrawingApi(drawingData);
+
+              const newData = [...data];
+              newData[index].drawing = drawing;
+              setData(newData);
+              // setImage(drawing)
+              await patchModelDetailAPi(data[index].id, data[index]);
+              
             } catch (error) {
               
             }
@@ -170,7 +183,14 @@ const ModelDetail= ({route, navigation}) =>{
 
     const drawing= (d, index)=>(
       <View style={[styles.row, styles.spaceAround]}>
-        <TouchableOpacity onPress={()=>setImageVisible(!imageVisible)}>
+        <TouchableOpacity onPress={()=>{
+          if(data[index].drawing !== null){
+            setImage(data[index].drawing);
+            setImageVisible(!imageVisible);
+          }else{
+            alert('도면이 할당되지 않았습니다');
+          }
+          }}>
         
         {isEdit ?
           <TextInput value={d} onChangeText={(txt)=>{
@@ -196,16 +216,6 @@ const ModelDetail= ({route, navigation}) =>{
       </View>
     );
     
-
-   
-    //이건 안쓸듯
-    const cell=(cellIndex, data, index)=>{
-      if(cellIndex ===1) return drawing(data, index);
-      else if(cellIndex ===2) return bom(data,index);
-      else if(cellIndex ===3) return plan(data, index);
-      else return data[cellIndex];
-      
-    }
     
     const edit = ()=>{
       setIsEdit(!isEdit);
@@ -230,15 +240,15 @@ const ModelDetail= ({route, navigation}) =>{
         animationType="none"
         transparent={true}
         visible={imageVisible}
-        onRequestClose={()=>setImageVisible(!imageVisible)}
+        onRequestClose={()=>setImageVisible(false)}
         >
-          <ScrollView>
-            {/* <ImageModal 
+          {/* <ScrollView> */}
+            <ImageModal 
             resizeMode="contain" 
-            style={{width:image.assets[0].width, height: image.assets[0].height}} 
-            source={{uri:`${image.assets[0].uri}`}}/>  */}
+            style={{width:width, height:height}} 
+            source={{uri:`${URL}/${image.fileName}`}}/> 
             {/* <Image style={{width:image.assets[0].width, height: image.assets[0].height}} source={{uri:`${image.assets[0].uri}`}}/> */}
-          </ScrollView>
+          {/* </ScrollView> */}
 
         </Modal>
 
@@ -246,7 +256,7 @@ const ModelDetail= ({route, navigation}) =>{
           animationType="none"
           transparent={true}
           visible={modalVisible}
-          onRequestClose={()=>{setModalVisible(!modalVisible)}}
+          onRequestClose={()=>{setModalVisible(false)}}
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
@@ -297,9 +307,28 @@ const ModelDetail= ({route, navigation}) =>{
                   setDueDate(0);
                   setDueMonth(0)
                   setModalData([]);
-                  setModalVisible(!modalVisible);
+                  setModalVisible(false);
                   }} />
               </View>
+            </View>
+          </View>
+        </Modal>
+
+        <Modal
+         animationType="none"
+         transparent={true}
+         visible={bomModal}
+         onRequestClose={()=>{setBomModal(false)}}>
+          <View style={styles.centeredView}>
+            <View style={[styles.modalView, styles.row ]}>
+              <Button title="  g  " onPress={()=>{
+                navigation.push('BOMDetail', {id: bomModalData, type:"g"});
+                setBomModal(false);
+              }} />
+              <Button title="  l   "  onPress={()=>{
+                navigation.push('BOMDetail', {id: bomModalData, type:"l"});
+                setBomModal(false);
+              }}/>
             </View>
           </View>
         </Modal>
@@ -332,10 +361,7 @@ const ModelDetail= ({route, navigation}) =>{
             }
         </Table>
         }
-        {/* <ImageModal 
-        resizeMode="contain" 
-        style={{width:250,height: 250}} 
-        source={{uri:'file:///data/user/0/com.awesomeproject/cache/rn_image_picker_lib_temp_b74cb9ab-127a-4c5e-bb05-81f3cc74dca9.png'}}/> */}
+        
        
         <BottomTool navigation={navigation} >
           {
@@ -413,6 +439,10 @@ const styles = StyleSheet.create({
       },
       fontWeight:{
         fontWeight:'bold'
+      },
+      bomBtn:{
+        width: 300,
+        height:'10%'
       }
   });
 
