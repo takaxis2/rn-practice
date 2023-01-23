@@ -3,10 +3,12 @@ import { useCallback, useEffect, useState } from "react";
 import { Alert, StatusBar, StyleSheet, Text, TouchableOpacity, View, Button, ScrollView, ActivityIndicator } from "react-native"
 import BottomTool from "../components/BottonTool";
 import DocumentPicker  from 'react-native-document-picker'
-import FileViewer from "react-native-file-viewer";
+// import FileViewer from "react-native-file-viewer";
 import { Row, Rows, Table, TableWrapper, Cell } from "react-native-table-component";
 import { pRow, pData, pPrevRow } from "../sampleData";
 import { deleteProdPlanAPi, getAllDoneProdPlanAPI, getAllProdPlanAPi, patchProdPlanAPi, socket } from "../api";
+import RnFetchBlob from'react-native-blob-util';
+import {read, write} from 'xlsx';
 
 const ProductionPlan= ({navigation}) =>{
   
@@ -34,22 +36,25 @@ const ProductionPlan= ({navigation}) =>{
 
   const viewFile = async() =>{
     try {
-      const res = await DocumentPicker.pick({
-        type: [DocumentPicker.types.allFiles],
+      const f = await DocumentPicker.pickSingle({
+        // type: [DocumentPicker.types.allFiles],
+        allowMultiSelection:false,
+        copyTo:'documentDirectory',
+        mode:"open",
       });
-      setFileResponse(res);
+      setFileResponse(f);
 
-      console.log(res);
+      // console.log(f);
 
-      const uri = res[0].uri;
+      const uri = f.uri;
       // uri.replace('content://', '')
 
-      FileViewer.open(uri)
-      .then(()=> console.log('success'))
-      .catch((error)=>console.log(error));
-      //이게 작동을 안하네
+      const res = await RnFetchBlob.fs.readFile(uri, 'ascii');
+      const excel = read(new Uint8Array(res), {type:'buffer'});
+      console.log(excel.Sheets);
+      
     } catch (e) {
-      // error
+      console.log(e);
     }
   }
 
@@ -173,7 +178,7 @@ const ProductionPlan= ({navigation}) =>{
           <View style={styles.container} >
             <View style={[styles.border, styles.center]}>
               <StatusBar barStyle={'dark-content'} />
-              {fileResponse.map((file, index) => (
+              {/* {fileResponse.map((file, index) => (
                 <Text
                   key={index.toString()}
                   style={styles.uri}
@@ -181,7 +186,7 @@ const ProductionPlan= ({navigation}) =>{
                   ellipsizeMode={'middle'}>
                   {file?.uri}
                 </Text>
-              ))}
+              ))} */}
               <Button title="Select " onPress={()=>viewFile() } />
             </View>
             
@@ -191,8 +196,9 @@ const ProductionPlan= ({navigation}) =>{
                   prev ?
                   <Table>
                     <Row data={prevRow}/>
+                    <ScrollView>
                     {
-                      data.map((rowData, index)=>(
+                      doneData.map((rowData, index)=>(
                         <TableWrapper key={index} style={styles.tableRow}>
                           <Cell data={index + 1}/>
                           <Cell data={rowData.createdAt}/>
@@ -202,10 +208,12 @@ const ProductionPlan= ({navigation}) =>{
                         </TableWrapper>
                       ))
                     }
+                    </ScrollView>
                   </Table>
                   :
                   <Table>
                   <Row data={row} />
+                  <ScrollView>
                   {
                     data.map((rowData, index)=>(
                       <TableWrapper key={index} style={styles.tableRow}>
@@ -220,6 +228,7 @@ const ProductionPlan= ({navigation}) =>{
                       </TableWrapper>
                     ))
                   }
+                  </ScrollView>
                 </Table>
                 }
             </View>

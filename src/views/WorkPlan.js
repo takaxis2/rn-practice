@@ -1,7 +1,7 @@
 /* eslint-disable */
 // import { Button } from "@rneui/base";
 import { useEffect, useState } from "react";
-import {  Alert, StyleSheet, Text, TouchableOpacity, View, Button, ActivityIndicator } from "react-native"
+import {  Alert, StyleSheet, Text, TouchableOpacity, View, Button, ActivityIndicator, ScrollView } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Table, Row, TableWrapper, Cell } from "react-native-table-component";
 import { deleteWorkPlanAPi, getAllDoneWorkPlanAPi, getAllWorkPlanAPi, patchWorkPlanAPi, socket } from "../api";
@@ -153,13 +153,14 @@ const WorkPlan= ({navigation}) =>{
                         prev ?
                         <>
                           <Row data={pHead} style={styles.head} />
+                          <ScrollView>
                           {
-                                prevData.map((rowData, index)=>(
+                            prevData.map((rowData, index)=>(
                                     <TableWrapper key={index} style={styles.tableRow}>
                                         {/* {
                                             rowData.map((cData, cIndex)=>(
                                                 <Cell key={cIndex} data={typeof cData === 'boolean' ? convert(cData) : cData} />
-                                            ))
+                                                ))
                                         } */}
                                         <Cell data={index+1}/>
                                         <Cell data={rowData.createdAt}/>
@@ -173,19 +174,21 @@ const WorkPlan= ({navigation}) =>{
                                         <Cell data={rowData.EA}/>
                                     </TableWrapper>
                                 ))
-                            }
+                              }
+                              </ScrollView>
                         </>
                         :
                         <>
                           <Row data={rowHead} style={styles.head} />
+                          <ScrollView>
                             {
-                                data.map((rowData, index)=>(
-                                    <TableWrapper key={index} style={styles.tableRow}>
+                              data.map((rowData, index)=>(
+                                <TableWrapper key={index} style={styles.tableRow}>
                                         {/* {
-                                            rowData.map((cData, cIndex)=>(
-                                                <Cell key={cIndex} data={typeof cData === 'boolean' ? convert(cData) : cData} />
+                                          rowData.map((cData, cIndex)=>(
+                                            <Cell key={cIndex} data={typeof cData === 'boolean' ? convert(cData) : cData} />
                                             ))
-                                        } */}
+                                          } */}
                                         <Cell data={index+1}/>
                                         <Cell data={rowData.createdAt}/>
                                         <Cell data={rowData.bom.pi}/>
@@ -198,7 +201,8 @@ const WorkPlan= ({navigation}) =>{
                                         <Cell data={complete(rowData, index)} />
                                     </TableWrapper>
                                 ))
-                            }
+                              }
+                              </ScrollView>
                         </>
                       }
                   </Table>
