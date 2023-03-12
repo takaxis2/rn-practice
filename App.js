@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
     backgroundColor: "whitesmoke",
     justifyContent: "center",
   },
+  
 });
 
 export default App;

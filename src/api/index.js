@@ -4,8 +4,8 @@
 import { io } from "socket.io-client";
 
 // const URL = 'https://10.0.2.2:3300';  
-export const URL = 'http://172.29.48.1:3300';
-const socketURL = 'ws://172.29.48.1:3300/notification';  
+export const URL = 'http://192.168.219.120:3300';
+const socketURL = 'ws://192.168.219.120:3300/notification';  
 
 //model
 //모델 리스트  

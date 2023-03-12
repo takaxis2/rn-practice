@@ -12,6 +12,7 @@ import com.facebook.soloader.SoLoader;
 import com.awesomeproject.newarchitecture.MainApplicationReactNativeHost;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import com.vinzscam.reactnativefileviewer.RNFileViewerPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 

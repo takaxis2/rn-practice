@@ -1,7 +1,7 @@
 /* eslint-disable */
 // import { Button } from "@rneui/base";
 import { useEffect, useState } from "react";
-import {  Alert, StyleSheet, Text, TouchableOpacity, View, Button, ActivityIndicator, ScrollView } from "react-native"
+import {  Alert, StyleSheet, Text, TouchableOpacity, View, Button, ActivityIndicator, ScrollView, FlatList } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Table, Row, TableWrapper, Cell } from "react-native-table-component";
 import { deleteWorkPlanAPi, getAllDoneWorkPlanAPi, getAllWorkPlanAPi, patchWorkPlanAPi, socket } from "../api";
@@ -20,6 +20,8 @@ const WorkPlan= ({navigation}) =>{
     const [prev, setPrev] = useState(false);
     const [data, setData] = useState([]);
     const [prevData, setPrevData] = useState([]);
+    const [load, setLoad] = useState(false);
+    const [page, setPage] = useState(0);
 
     const getWorkPlans =async () =>{
       try {
@@ -32,9 +34,11 @@ const WorkPlan= ({navigation}) =>{
     }
     const getPrevData= async()=>{
       try {
-        const json = await getAllDoneWorkPlanAPi(0);
-        setPrevData(json)
+        const json = await getAllDoneWorkPlanAPi(page);
+        setPrevData([...prevData ,...json]);
         // console.log(prevData);
+        setLoad(false);
+        setPage(page+1);
       } catch (error) {
         
       }
@@ -153,29 +157,30 @@ const WorkPlan= ({navigation}) =>{
                         prev ?
                         <>
                           <Row data={pHead} style={styles.head} />
-                          <ScrollView>
-                          {
-                            prevData.map((rowData, index)=>(
-                                    <TableWrapper key={index} style={styles.tableRow}>
-                                        {/* {
-                                            rowData.map((cData, cIndex)=>(
-                                                <Cell key={cIndex} data={typeof cData === 'boolean' ? convert(cData) : cData} />
-                                                ))
-                                        } */}
+                              <FlatList 
+                                data={prevData}
+                                renderItem={({item, index})=>(
+                                  <TableWrapper key={index} style={styles.tableRow}>
                                         <Cell data={index+1}/>
-                                        <Cell data={rowData.createdAt}/>
-                                        <Cell data={rowData.updatedAt}/>
-                                        <Cell data={rowData.bom.pi}/>
-                                        <Cell data={rowData.bom.size}/>
-                                        <Cell data={convert(rowData.bom.CNC)}/>
-                                        <Cell data={convert(rowData.bom.shorten)}/>
-                                        <Cell data={convert(rowData.bom.enrlgmnt)}/>
-                                        <Cell data={convert(rowData.bom.reduction)}/>
-                                        <Cell data={rowData.EA}/>
+                                        <Cell data={item.createdAt}/>
+                                        <Cell data={item.updatedAt}/>
+                                        <Cell data={item.bom.pi}/>
+                                        <Cell data={item.bom.size}/>
+                                        <Cell data={convert(item.bom.CNC)}/>
+                                        <Cell data={convert(item.bom.shorten)}/>
+                                        <Cell data={convert(item.bom.enrlgmnt)}/>
+                                        <Cell data={convert(item.bom.reduction)}/>
+                                        <Cell data={item.EA}/>
                                     </TableWrapper>
-                                ))
-                              }
-                              </ScrollView>
+                                )}
+                                onEndReached={()=>{
+                                  if(prevData.length >= page*10){
+                                    setLoad(true);
+                                    getPrevData();
+                                  }
+                                }}
+                                ListFooterComponent={load && <ActivityIndicator />}
+                              />
                         </>
                         :
                         <>

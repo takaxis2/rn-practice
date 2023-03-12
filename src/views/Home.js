@@ -13,6 +13,7 @@ const Home = ({navigation}) => {
   
 
   useEffect(()=>{
+    // console.log('ws wp');
     socket.emit('work-plan');
     socket.on('wpNotification',(e)=>{
       // console.log(e);
@@ -21,6 +22,7 @@ const Home = ({navigation}) => {
   },[]);
 
   useEffect(()=>{
+    // console.log('ws pp');
     socket.emit('prod-plan');
     socket.on('ppNotification',(e)=>{
       setPpTask(e);
