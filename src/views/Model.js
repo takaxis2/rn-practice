@@ -1,10 +1,11 @@
 /* eslint-disable */
 // import { Button } from "@rneui/themed";
 import { useState, useEffect } from "react";
-import {  StyleSheet, Text, View, Modal, ActivityIndicator, Button } from "react-native";
+import {  StyleSheet, Text, View, Modal, ActivityIndicator } from "react-native";
 import BottomTool from "../components/BottonTool";
 import { getAllModelApi } from "../api/index";
 import { model } from "../sampleData";
+import { CButton as Button} from "../components/CustomButton";
 
 const Model= ({navigation}) =>{
     const modelData = model;

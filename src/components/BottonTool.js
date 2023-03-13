@@ -2,6 +2,7 @@
 
 // import { Button } from "@rneui/themed";
 import { StyleSheet, View, Button } from "react-native";
+import { CButton } from "./CustomButton";
 
 const BottomTool = ({navigation, children}) =>{
 
@@ -9,16 +10,16 @@ const BottomTool = ({navigation, children}) =>{
 
 
     return (
-        <View style={[styles.row,styles.spaceBetween]}>
+        <View style={[styles.row,styles.spaceBetween, styles.footer]}>
             <View style={styles.row}> 
                 {children}
             </View>
 
             <View style={styles.row}>
-                <Button title="이전 화면" onPress={()=>{
+                <CButton title="이전 화면" onPress={()=>{
                     navigation.pop();
                 }} />
-                <Button title="Home" onPress={()=>{
+                <CButton title="Home" onPress={()=>{
                     navigation.navigate('Home');
                 }}/>
             </View>
@@ -34,6 +35,12 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         flexWrap: "wrap",
       },
+    footer:{
+        left:0,
+        right:0,
+        bottom:0,
+        position:'relative'
+    }
 })
 
 export default BottomTool;

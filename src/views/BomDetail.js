@@ -1,12 +1,13 @@
 /*eslint-disable*/
 // import { Text } from "@rneui/themed";
 import { useCallback, useEffect, useState } from "react";
-import { Modal, StyleSheet, Switch, TextInput, TouchableOpacity, View, Button, Text, ActivityIndicator, Alert } from "react-native";
+import { Modal, StyleSheet, Switch, TextInput, TouchableOpacity, View, Text, ActivityIndicator, Alert } from "react-native";
 import { Cell, Row, Table, TableWrapper } from "react-native-table-component";
 import BottomTool from "../components/BottonTool";
 import { bdRowHead, bdSampleBody } from "../sampleData";
 import  DocumentPicker  from 'react-native-document-picker'
 import { getAllBomAPi, patchBomAPi, postWorkPlanAPi, socket } from "../api";
+import { CButton as Button} from "../components/CustomButton";
 
 const BOMDetail=({route, navigation})=>{
     const {id, type} =route.params;
@@ -94,6 +95,7 @@ const BOMDetail=({route, navigation})=>{
     const check = (d, index, key)=>(
         <View>
             {
+                //이거 그냥 ox 바꾸는거로
                 isEdit ?
                 <Switch value={d} onValueChange={(val)=>{
                     const newData =[...data];
@@ -110,37 +112,10 @@ const BOMDetail=({route, navigation})=>{
         </View>
     );
     
-    //얘도 안사용
-    const convert = (data, index)=> {
-        if(data) return check(data);
-        else if(!data) return check( data);
-    } 
-    const drawing = (data) =>(
-        <View>
-            {
-                isEdit ?
-                <TouchableOpacity onPress={handleDocumentSelection}>
-                    <Text>image</Text>
-                </TouchableOpacity>
-                :
-                <TouchableOpacity onPress={()=>alert('image')}>
-                    <Text>{data}</Text>
-                </TouchableOpacity>
-            }
-        </View>
-    )
     
-    //얘도 안사용
-    const cell = (data, index) =>{
-        if(index === 0) return drawing(data);
-        else if(typeof data === 'boolean') return convert(data);
-        else return cellInfo(data);
-    }
 
     return(
-        <View style={styles.container}>
-            
-
+        <View style={[styles.spaceBetween, styles.container]}>
             <Modal
                 animationType="none"
                 transparent={true}
@@ -149,7 +124,7 @@ const BOMDetail=({route, navigation})=>{
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
                         <Text>수량</Text>
-                        <TextInput value={EA} onChangeText={setEA} placeholder={'수량을 입력하세요'} />
+                        <TextInput style={[styles.input, styles.text]} value={EA} onChangeText={setEA} placeholder={'수량'} placeholderTextColor={'#808080'} />
                         <View style={[styles.row, styles.spaceBetween]}>
                             <Button title={'확인'} onPress={async ()=>{
                                 //여기서 값 저장 로직
@@ -179,7 +154,7 @@ const BOMDetail=({route, navigation})=>{
                 <ActivityIndicator size={'large'} />
                 :
                 <Table>
-                    <Row data={rowHead} style={styles.head} />
+                    <Row data={rowHead} style={styles.head} flexArr={[1,1,1,1,1,1,1,1,1.5,1.5]} textStyle={styles.text} />
                     {
                         data.map((rowData, index)=>(
                             <TableWrapper style={styles.tableRow}>
@@ -189,16 +164,16 @@ const BOMDetail=({route, navigation})=>{
                                         <Cell key={cellIndex} data={cell(cellData, cellIndex)} />
                                     ))
                                 } */}
-                                <Cell data={index +1} />
-                                <Cell data={cellInfo(rowData.pi, index, 'pi')} />
-                                <Cell data={cellInfo(rowData.size, index, 'size')} />
-                                <Cell data={check(rowData.CNC, index, 'CNC')} />
-                                <Cell data={check(rowData.T, index, 'T')} />
-                                <Cell data={check(rowData.enlrgmnt, index, 'enlrgmnt')} />
-                                <Cell data={check(rowData.reduction, index, 'reduction')} />
-                                <Cell data={check(rowData.shorten, index, 'shorten')} />
-                                <Cell data={cellInfo(rowData.requirement, index, 'requirement')} />
-                                <Cell data={plan(rowData, index)}/>
+                                <Cell flex={1} data={index +1} />
+                                <Cell flex={1} data={cellInfo(rowData.pi, index, 'pi')} />
+                                <Cell flex={1} data={cellInfo(rowData.size, index, 'size')} />
+                                <Cell flex={1} data={check(rowData.CNC, index, 'CNC')} />
+                                <Cell flex={1} data={check(rowData.T, index, 'T')} />
+                                <Cell flex={1} data={check(rowData.enlrgmnt, index, 'enlrgmnt')} />
+                                <Cell flex={1} data={check(rowData.reduction, index, 'reduction')} />
+                                <Cell flex={1} data={check(rowData.shorten, index, 'shorten')} />
+                                <Cell flex={1.5} data={cellInfo(rowData.requirement, index, 'requirement')} />
+                                <Cell flex={1.5} data={plan(rowData, index)}/>
                             </TableWrapper>
                         ))
                     }
@@ -220,9 +195,9 @@ const BOMDetail=({route, navigation})=>{
 }
 
 const styles=StyleSheet.create({
-    container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff' },
-    head: { height: 40, backgroundColor: '#f1f8ff' },
-    tableRow: {flexDirection: 'row', height: 40, backgroundColor: '#E7E6E1' },
+    container: { flex: 1, paddingBottom: 16, paddingTop: 30, backgroundColor: '#fff' },
+    head: { borderTopWidth:1, borderLeftWidth:1, borderRightWidth:1 },
+    tableRow: {flexDirection: 'row', height: 40, backgroundColor: '#8e8e8e' },
     centeredView: {
         flex: 1,
         justifyContent: "center",
@@ -248,6 +223,16 @@ const styles=StyleSheet.create({
       },
       row:{flexDirection:"row"},
       spaceBetween:{justifyContent:"space-between"},
+      text:{
+        color:'#808080'
+      },
+      input: {
+        height: 40,
+        width: 120,
+        margin: 12,
+        borderWidth: 1,
+        padding: 10,
+      },
 });
 
 export default BOMDetail;

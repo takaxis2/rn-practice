@@ -30,7 +30,7 @@ export const pData =[
     [3, '11/30','c','2023/10/30', 100],
   ];
 
-export const mdTableHead =['/','품명','B.O.M','계획'];
+export const mdTableHead =['id','품명','B.O.M','계획'];
 export const mdTableData =[
         [1,	'abcd','B.O.M',	'계획'],
         [2,	'DFS','B.O.M',	'계획'],

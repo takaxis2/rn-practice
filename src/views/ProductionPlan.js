@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { useCallback, useEffect, useState } from "react";
-import { Alert, StatusBar, StyleSheet, Text, TouchableOpacity, View, Button, ScrollView, ActivityIndicator, FlatList } from "react-native"
+import { Alert, StatusBar, StyleSheet, Text, TouchableOpacity, View, ScrollView, ActivityIndicator, FlatList } from "react-native"
 import BottomTool from "../components/BottonTool";
 import DocumentPicker from 'react-native-document-picker'
 import FileViewer from "react-native-file-viewer";
@@ -9,6 +9,8 @@ import { pRow, pData, pPrevRow } from "../sampleData";
 import { deleteProdPlanAPi, getAllDoneProdPlanAPI, getAllProdPlanAPi, patchProdPlanAPi, socket } from "../api";
 import RnFetchBlob from 'react-native-blob-util';
 import { read, write, utils } from 'xlsx';
+import { dateFormat } from "../utils";
+import { CButton as Button} from "../components/CustomButton";
 
 const ProductionPlan = ({ navigation }) => {
 
@@ -234,17 +236,17 @@ const ProductionPlan = ({ navigation }) => {
 
                 {
                   prev ?
-                    <Table style={styles.text}>
-                      <Row style={[]} data={prevRow} />
+                    <Table>
+                      <Row textStyle={styles.text} flexArr={[1,2,1,2,1]} data={prevRow} />
                       <FlatList
                         data={doneData}
                         renderItem={({item, index})=>(
                         <TableWrapper key={index} style={styles.tableRow}>
-                          <Cell data={index + 1} />
-                          <Cell data={item.createdAt} />
-                          <Cell data={item.modelDetail.name} />
-                          <Cell data={item.dueDate} />
-                          <Cell data={item.EA} />
+                          <Cell flex={1} data={index + 1} />
+                          <Cell flex={2} data={dateFormat(item.createdAt)} />
+                          <Cell flex={1} data={item.modelDetail.name} />
+                          <Cell flex={2} data={dateFormat(item.dueDate)} />
+                          <Cell flex={1} data={item.EA} />
                         </TableWrapper>)}
                         onEndReached={()=>{
                           if(doneData.length >= page * 10){
@@ -259,18 +261,18 @@ const ProductionPlan = ({ navigation }) => {
                     </Table>
                     :
                     <Table>
-                      <Row data={row} />
+                      <Row data={row} textStyle={styles.text} flexArr={[1,2,1,2,1,1]} />
                       <ScrollView>
                         {
                           data.map((rowData, index) => (
                             <TableWrapper key={index} style={styles.tableRow}>
 
-                              <Cell data={index + 1} />
-                              <Cell data={rowData.createdAt} />
-                              <Cell data={rowData.modelDetail.name} />
-                              <Cell data={rowData.dueDate} />
-                              <Cell data={rowData.EA} />
-                              <Cell data={complete(rowData, index)} />
+                              <Cell flex={1} data={index + 1} />
+                              <Cell flex={2} data={dateFormat(rowData.createdAt)} />
+                              <Cell flex={1} data={rowData.modelDetail.name} />
+                              <Cell flex={2} data={dateFormat(rowData.dueDate)} />
+                              <Cell flex={1} data={rowData.EA} />
+                              <Cell flex={1} data={complete(rowData, index)} />
 
                             </TableWrapper>
                           ))
@@ -317,9 +319,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  tableRow: { flexDirection: 'row', height: 40, backgroundColor: '#E7E6E1' },
+  tableRow: { flexDirection: 'row', height: 40, backgroundColor: '#8e8e8e' },
   text:{
-    color:'#000000'
+    color:'#808080'
   },
 });
 

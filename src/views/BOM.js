@@ -1,11 +1,12 @@
 /* eslint-disable */
 // import { Button } from "@rneui/themed";
 import { useEffect, useState } from "react";
-import { Modal, StyleSheet, Text, View, Button, ActivityIndicator } from "react-native"
+import { Modal, StyleSheet, Text, View, ActivityIndicator } from "react-native"
 import { Cell, Row, Table, TableWrapper } from "react-native-table-component";
 import { getAllGBomAPi, getAllLBomAPi, getAllModelApi, getAllModelDetailAPi } from "../api";
 import BottomTool from "../components/BottonTool";
 import { BomPopupData, Boms } from "../sampleData";
+import { CButton as Button } from "../components/CustomButton";
 
 const BOM= ({navigation}) =>{
     
@@ -62,15 +63,15 @@ const BOM= ({navigation}) =>{
             visible={modalVisible}
             onRequestClose={()=>{setModalVisible(!modalVisible)}}>
                 <View style={styles.centeredView}>
-                    <View style={styles.modalView}>
-                        <View style={[styles.row, styles.spaceBetween]}>
+                    <View style={[styles.modalView, styles.spaceBetween]}>
+                        {/* <View style={[styles.row, styles.spaceBetween]}>
                             <Button title={'이전'} />
                             <Button title={'다음'} />
-                        </View>
+                        </View> */}
 
                         <Table>
-                            <Row data={[modalData.name]} style={styles.head} />
-                            <Row data={['g','l']} style={styles.head} />
+                            <Row data={[modalData.name]} textStyle={styles.text} style={styles.head} />
+                            <Row data={['g','l']} textStyle={[styles.text, styles.textalign]} style={styles.head} />
                             <TableWrapper style={styles.flexRow}>
                                 <TableWrapper style={styles.table}>
                                     {
@@ -129,8 +130,8 @@ const BOM= ({navigation}) =>{
     );
 }
 const styles = StyleSheet.create({
-    head: { height: 40, backgroundColor: '#f1f8ff', width:'100%', paddingLeft: 15 },
-    tableRow: {flexDirection: 'row', height: 40, backgroundColor: '#E7E6E1' },
+    head: { borderTopWidth: 1, borderLeftWidth: 1, borderRightWidth: 1 },
+    tableRow: {flexDirection: 'row', height: 40, backgroundColor: '#8e8e8e' },
     container: {
         flex: 1,
         backgroundColor: "aliceblue",
@@ -185,7 +186,13 @@ const styles = StyleSheet.create({
     table:{
         width:'50%',
         height:'70%'
-    }
+    },
+    text: {
+        color: '#808080',
+      },
+      textalign:{
+        textAlign:'center'
+      }
 });
 
 export default BOM;
