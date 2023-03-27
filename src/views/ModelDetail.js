@@ -156,12 +156,12 @@ const ModelDetail = ({ route, navigation }) => {
               const newData = [...data];
               newData[index].drawing = drawing;
               setData(newData);
-              // setImage(drawing)
-              await patchModelDetailAPi(data[index].id, data[index]);
+              setImage(drawing);
 
             } catch (error) {
 
             }
+            await patchModelDetailAPi(data[index].id, data[index]);
             Alert.alert('수정', '수정이 완료되었습니다');
           }}>
             <View>
@@ -187,6 +187,7 @@ const ModelDetail = ({ route, navigation }) => {
       <TouchableOpacity onPress={() => {
         if (data[index].drawing !== null) {
           setImage(data[index].drawing);
+          console.log(image);
           setImageVisible(!imageVisible);
         } else {
           alert('도면이 할당되지 않았습니다');
@@ -242,6 +243,7 @@ const ModelDetail = ({ route, navigation }) => {
       >
         {/* <ScrollView> */}
         <ImageModal
+          imageBackgroundColor="#FFFFFF"
           resizeMode="contain"
           style={{ width: width, height: height }}
           source={{ uri: `${URL}/${image.fileName}` }} />
@@ -266,7 +268,7 @@ const ModelDetail = ({ route, navigation }) => {
               <TextInput style={[styles.input, styles.text]} value={EA} onChangeText={setEA} placeholder='수량' placeholderTextColor={'#808080'} />
             </View>
 
-            
+
 
             <View style={[styles.spaceBetween, styles.row]}>
               <Button title={'확인'} onPress={async () => {

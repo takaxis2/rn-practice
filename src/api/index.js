@@ -105,8 +105,8 @@ export const getAllBomAPi = async(id, type)=>{
 export const getOneBomAPi = async()=>{
   console.log('getOneBomAPi');
 }
-export const patchBomAPi = async(data)=>{
-  const result = await fetch(`${URL}/bom/${data.id}`,{
+export const patchBomAPi = async(id,data)=>{
+  const result = await fetch(`${URL}/bom/${id}`,{
     method:'PATCH',
     headers: {
       Accept: 'application/json',
@@ -265,7 +265,12 @@ export const postDrawingApi =async(data)=>{
 //bom-drawing
 
 export const postBomDrawingApi= async(data)=>{
-  
+  const result = await fetch(`${URL}/bom-drawing`,{
+    method:'POST',
+    body:data,
+  })
+  console.log('postBomDrawingApi');
+  return result.json();
 };
 
 export const socket = io(`${socketURL}`);
