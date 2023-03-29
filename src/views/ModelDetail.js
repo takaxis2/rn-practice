@@ -187,7 +187,7 @@ const ModelDetail = ({ route, navigation }) => {
       <TouchableOpacity onPress={() => {
         if (data[index].drawing !== null) {
           setImage(data[index].drawing);
-          console.log(image);
+          // console.log(image);
           setImageVisible(!imageVisible);
         } else {
           alert('도면이 할당되지 않았습니다');
@@ -287,7 +287,7 @@ const ModelDetail = ({ route, navigation }) => {
                 data.EA = EA;
                 data.dueDate = date;
 
-                console.log(JSON.stringify(data));
+                // console.log(JSON.stringify(data));
                 try {
                   await postProdPlanAPi(data);
                 } catch (error) {
@@ -342,21 +342,25 @@ const ModelDetail = ({ route, navigation }) => {
               <Row data={tableHead} style={styles.head} textStyle={styles.text} />
               {
                 data.map((rowData, index) => (
-                  <TableWrapper key={index} style={styles.tableRow}>
-                    {
-                      // rowData.map((cellData, cellIndex) => (
-                      //   // <Cell key={cellIndex} data={cellIndex === 3 ? plan(cellData, index) : cellData} />
-                      //   <Cell key={cellIndex} data={cell(cellIndex, rowData, index)} />
-                      // ))
+                  <ScrollView>
 
-                      <>
-                        <Cell data={index + 1} />
-                        <Cell data={drawing(rowData.name, index)} />
-                        <Cell data={bom(rowData.id, index)} />
-                        <Cell data={plan(rowData, index)} />
-                      </>
-                    }
-                  </TableWrapper>
+                    <TableWrapper key={index} style={styles.tableRow}>
+
+                      {
+                        // rowData.map((cellData, cellIndex) => (
+                        //   // <Cell key={cellIndex} data={cellIndex === 3 ? plan(cellData, index) : cellData} />
+                        //   <Cell key={cellIndex} data={cell(cellIndex, rowData, index)} />
+                        // ))
+
+                        <>
+                          <Cell data={index + 1} />
+                          <Cell data={drawing(rowData.name, index)} />
+                          <Cell data={bom(rowData.id, index)} />
+                          <Cell data={plan(rowData, index)} />
+                        </>
+                      }
+                    </TableWrapper>
+                  </ScrollView>
                 ))
               }
             </Table>

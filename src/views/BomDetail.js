@@ -30,12 +30,12 @@ const BOMDetail = ({ route, navigation }) => {
     const sampleBody = bdSampleBody;
 
     const getBoms = async () => {
-        console.log(id, type);
+        // console.log(id, type);
         const json = await getAllBomAPi(id, type);
         // console.log(id, type);
         setData(json);
         setLoading(false);
-        console.log(json);
+        // console.log(json);
     }
 
     useEffect(() => {
@@ -111,7 +111,7 @@ const BOMDetail = ({ route, navigation }) => {
                 else {
                     if (data[index].bomDrawing !== null) {
                         setImage(data[index].bomDrawing);
-                        console.log(image);
+                        // console.log(image);
                         setImageVisible(!imageVisible);
                     } else {
                         alert('도면이 할당되지 않았습니다');

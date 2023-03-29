@@ -1,7 +1,7 @@
 /* eslint-disable */
 // import { Button } from "@rneui/themed";
 import { useEffect, useState } from "react";
-import { Modal, StyleSheet, Text, View, ActivityIndicator, TextInput, TouchableOpacity } from "react-native"
+import { Modal, StyleSheet, Text, View, ActivityIndicator, TextInput, TouchableOpacity, ScrollView } from "react-native"
 import { Cell, Row, Table, TableWrapper } from "react-native-table-component";
 import { getAllGBomAPi, getAllLBomAPi, getAllModelApi, getAllModelDetailAPi } from "../api";
 import BottomTool from "../components/BottonTool";
@@ -108,22 +108,27 @@ const BOM = ({ navigation }) => {
                             <Row data={['g', 'l']} textStyle={[styles.text, styles.textalign]} style={styles.head} />
                             <TableWrapper style={styles.flexRow}>
                                 <TableWrapper style={styles.table}>
-                                    {
-                                        bomList.map((data, index) => (
-                                            // <Cell key={index} data={data.name} style={styles.tableRow} onPress={()=>{
-                                            //     setModalVisible(!modalVisible);
-                                            //     navigation.push('BOMDetail',{id:data.id, type:"g", });
-                                            // }}/>
-                                            <Cell key={index} data={glCell(data.name, data.id, "g")} style={styles.tableRow} />
-                                        ))
-                                    }
+                                    <ScrollView style={[styles.scrollview]}>
+                                        {
+                                            bomList.map((data, index) => (
+                                                // <Cell key={index} data={data.name} style={styles.tableRow} onPress={()=>{
+                                                //     setModalVisible(!modalVisible);
+                                                //     navigation.push('BOMDetail',{id:data.id, type:"g", });
+                                                // }}/>
+                                                <Cell key={index} data={glCell(data.name, data.id, "g")} style={styles.tableRow} />
+                                            ))
+                                        }
+                                    </ScrollView>
                                 </TableWrapper>
+
                                 <TableWrapper style={styles.table}>
-                                    {
-                                        bomList.map((data, index) => (
-                                            <Cell key={index} data={glCell(data.name, data.id, "l")} style={styles.tableRow} />
-                                        ))
-                                    }
+                                    <ScrollView>
+                                        {
+                                            bomList.map((data, index) => (
+                                                <Cell key={index} data={glCell(data.name, data.id, "l")} style={styles.tableRow} />
+                                            ))
+                                        }
+                                    </ScrollView>
                                 </TableWrapper>
                             </TableWrapper>
 
@@ -131,7 +136,7 @@ const BOM = ({ navigation }) => {
 
 
                         <View style={[styles.row]}>
-                            <Button title={edit ? '완료' : '수정'} onPress={() => setEdit(!edit)} />
+                            {/* <Button title={edit ? '완료' : '수정'} onPress={() => setEdit(!edit)} /> */}
                             <Button title={'취소'} onPress={() => setModalVisible(!modalVisible)} />
                         </View>
                     </View>
@@ -193,7 +198,7 @@ const styles = StyleSheet.create({
     },
     modalView: {
         width: '90%',
-        height: '60%',
+        height: '50%',
         margin: 20,
         backgroundColor: "white",
         borderRadius: 20,
@@ -227,7 +232,10 @@ const styles = StyleSheet.create({
     },
     textalign: {
         textAlign: 'center'
-    }
+    },
+    scrollview:{
+        height:'100%'
+    },
 });
 
 export default BOM;

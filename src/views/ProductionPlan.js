@@ -250,7 +250,7 @@ const ProductionPlan = ({ navigation }) => {
                         </TableWrapper>)}
                         onEndReached={()=>{
                           if(doneData.length >= page * 10){
-                            console.log('end reached');
+                            // console.log('end reached');
                             setLoad(true);
                             getDoneData();
                           }

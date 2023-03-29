@@ -230,7 +230,7 @@ const WorkPlan = ({ navigation }) => {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingBottom:16, backgroundColor: '#fff' },
+  container: { flex: 1, paddingBottom:16, backgroundColor: '#fff', marginTop:30 },
   head: { borderTopWidth: 1, borderLeftWidth: 1, borderRightWidth: 1 },
   tableRow: { flexDirection: 'row', height: 40, backgroundColor: '#8E8E8E' },
   text: {
