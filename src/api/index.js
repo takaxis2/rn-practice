@@ -2,10 +2,14 @@
 // export const URL = 'http://14.48.162.122:3300';
 
 import { io } from "socket.io-client";
+import { Url,SocketUrl} from '@env';
 
-// const URL = 'https://10.0.2.2:3300';  
-export const URL = 'http://192.168.219.120:3300';
-const socketURL = 'ws://192.168.219.120:3300/notification';  
+
+// export const URL = 'http://192.168.219.120:3300';
+// const socketURL = 'ws://192.168.219.120:3300/notification';  
+
+export const URL = 'http://130.162.140.214:3300';
+const socketURL = 'ws://130.162.140.214:3300/notification';  
 
 //model
 //모델 리스트  
@@ -18,6 +22,8 @@ export const getAllModelApi = async () => {
     },
   });
   console.log('getAllmodelAPI');
+  console.log(URL);
+  console.log(socketURL);
   return await result.json();
 };
 //모델 생성
